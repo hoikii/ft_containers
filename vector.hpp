@@ -5,6 +5,7 @@
 # include <memory>
 # include <limits>
 # include <algorithm>
+# include "random_access_iterator.hpp"
 
 namespace ft {
 
@@ -17,12 +18,10 @@ class vector {
 		typedef const T&			const_reference;
 		typedef T*					pointer;
 		typedef const T*			const_pointer;
-#if 0
-		iterator;
-		const_iterator;
-		reverse_iterator;
-		const_reverse_iterator;
-#endif
+		typedef random_access_iterator<T>			iterator;
+		typedef random_access_iterator<const T>		const_iterator;
+//		typedef reverse_iterator<iterator>			reverse_iterator;
+//		typedef reverse_iterator<const_iterator>	const_reverse_iterator;
 		typedef ptrdiff_t			difference_type;
 		typedef size_t				size_type;
 
@@ -73,16 +72,16 @@ class vector {
 			return *this;
 		}
 
-#if 0
 		// Iterators
-		iterator		begin();
-		const_iterator	begin() const;
-		iterator		end();
-		const_iterator	end() const;
-		iterator		rbegin();
-		const_iterator	rbegin() const;
-		iterator		rend();
-		const_iterator	rend() const;
+		iterator				begin()			{ return iterator(_ptr_start); }
+		const_iterator			begin() const	{ return const_iterator(_ptr_start); }
+		iterator				end() 			{ return iterator(_ptr_start + _size); }
+		const_iterator			end() const		{ return const_iterator(_ptr_start + _size); }
+#if 0
+		reverse_iterator		rbegin() {}
+		const_reverse_iterator	rbegin() const	{}
+		reverse_iterator		rend() {}
+		const_reverse_iterator	rend() const	{}
 #endif
 
 		// capacity
@@ -157,13 +156,11 @@ class vector {
 			return _ptr_start[n];
 		}
 
-		reference		front() { return _ptr_start[0]; }
+		reference		front()			{ return _ptr_start[0]; }
+		const_reference	front() const	{ return _ptr_start[0]; }
 
-		const_reference	front() const { return _ptr_start[0]; }
-
-		reference		back() { return _ptr_start[_size - 1]; }
-
-		const_reference	back() const { return _ptr_start[_size - 1]; }
+		reference		back()			{ return _ptr_start[_size - 1]; }
+		const_reference	back() const	{ return _ptr_start[_size - 1]; }
 
 		// modifiers
 #if 0

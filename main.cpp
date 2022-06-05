@@ -22,13 +22,22 @@ int main() {
 
 	for (size_t i = 1; i < 10; i++)
 		vector_int.push_back(i);
+	{
+		ft::vector<int>::iterator it = vector_int.begin();
+		ft::vector<int>::iterator ite = vector_int.end();
+		std::cout <<*(3+it ) << std::endl;
+		std::cout <<(ite-it ) << std::endl;
+		for (; it != ite; it++)
+			std::cout << *it << " ";
+		std::cout << std::endl;
+	}
 	vector_int.resize(5);
 	vector_int.resize(8,100);
 	vector_int.resize(12);
 	std::cout << "size, capacity = " << vector_int.size() << ", " << vector_int.capacity() << std::endl;
 	for (size_t i = 1; i < vector_int.size(); i++)
 		std::cout << vector_int[i] << " ";
-	std::cout << "\n";
+	std::cout << std::endl;
 	vector_int.clear();
 	std::cout << "size, capacity = " << vector_int.size() << ", " << vector_int.capacity() << std::endl;
 
@@ -39,28 +48,20 @@ int main() {
 	std::cout << typeid(v.get_allocator()).name() << std::endl;
 	for (size_t i = 1; i < v.size(); i++)
 		std::cout << v[i] << " ";
+	std::cout << std::endl;
+
+	
 
 
 
-
-	return 0;
-#if 0
-	typedef std::vector<int>::iterator itType;
+	typedef ft::vector<int>::iterator itType;
 	itType it;
 
 	std::cout << "typename of iterator: " << typeid(itType).name() << std::endl;
 	std::cout << "category of iterator: " << typeid(itType::iterator_category).name() << std::endl;
 	std::cout << "valuetype of iterator: " << typeid(itType::value_type).name() << std::endl;
+	std::cout << "differencetype of iterator: " << typeid(itType::difference_type).name() << std::endl;
 	std::cout << "typename of data that iterator points to: " << typeid(*it).name() << std::endl;
 
 
-	typedef RandomAccessIterator<int> citType;
-	citType cit;
-
-	std::cout << "\n\n";
-	std::cout << "typename of iterator: " << typeid(citType).name() << std::endl;
-//	std::cout << "category of iterator: " << typeid(citType::iterator_category).name() << std::endl;
-	std::cout << "valuetype of iterator: " << typeid(citType::value_type).name() << std::endl;
-//	std::cout << "typename of data that iterator points to: " << typeid(*cit).name() << std::endl;
-#endif
 }
