@@ -1,13 +1,14 @@
 #ifndef VECTOR_HPP
 # define VECTOR_HPP
 
+# include <cstddef>
 # include <memory>
 # include <limits>
 # include <algorithm>
 
 namespace ft {
 
-template <typename T, typename Alloc = std::allocator<T>>
+template < typename T, typename Alloc = std::allocator<T> >
 class vector {
 	public:
 		typedef T					value_type;
@@ -26,27 +27,25 @@ class vector {
 		typedef size_t				size_type;
 
 	private:
-		T				*m_array;
-		size_type		m_size;
-		size_type		m_capacity;
-		allocator_type	m_alloc;
-
+		T				*_ptr_start;
+		size_type		_size;
+		size_type		_capacity;
+		allocator_type	_alloc;
 
 	public:
 		// Ctor
 
 		// default
-		vector(const allocator_type& alloc = allocator_type()) : m_array(NULL), m_size(0), m_capacity(0), m_alloc(alloc) {}
+		vector(const allocator_type& alloc = allocator_type()) : _ptr_start(NULL), _size(0), _capacity(0), _alloc(alloc) {}
 
 		// fill
 		vector(size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()) {
-			m_alloc = alloc;
-			m_size = n;
-			m_capacity = n;
-//			m_array = new T[n];
-			m_array = m_alloc.allocate(n);
+			_alloc = alloc;
+			_size = n;
+			_capacity = n;
+			_ptr_start = _alloc.allocate(n);
 			for (size_t i = 0; i < n; i++)
-				m_array[i] = val;
+				_ptr_start[i] = val;
 		}
 /*
 		vec(20, 0); 의 경우 fill이 아닌 range가 선택될 수 있기 때문에 enable_if 구현이 필요하다.
@@ -57,18 +56,16 @@ class vector {
 
 		// Dtor
 		~vector() {
-			if (m_capacity)
-				// delete[] m_array;
-				m_alloc.deallocate(m_array, m_capacity);
+			if (_ptr_start)
+				_alloc.deallocate(_ptr_start, _capacity);
 		}
 		// Copy Ctor
 		vector(const vector& other) {
-//			m_array = new T[other.m_capacity];
-			m_array = m_alloc.allocate(other.m_capacity);
-			m_size = other.m_size;
-			m_capacity = other.m_capacity;
-			for (size_t i = 0; i < m_size; i++)
-				m_array[i] = other.m_array[i];
+			_ptr_start = _alloc.allocate(other._capacity);
+			_size = other._size;
+			_capacity = other._capacity;
+			for (size_t i = 0; i < _size; i++)
+				_ptr_start[i] = other._ptr_start[i];
 		}
 		// operator=
 		vector& operator=(const vector& rhs) {
@@ -89,7 +86,7 @@ class vector {
 #endif
 
 		// capacity
-		size_type		size() const { return m_size; }
+		size_type		size() const { return _size; }
 
 		/* returns the maximum number of elements that vector can hold.
 		 * This is the maximum potential size the container can reach due to system or implementation limitations.
@@ -105,28 +102,28 @@ class vector {
 		 * if n is also greater than current capacity, automatic reallocation will occur.
 		 */
 		void			resize(size_type n, value_type val = value_type()) {
-			if (n > m_capacity)
+			if (n > _capacity)
 			{
 				vector tmp(n);
 				for (size_t i = 0; i < n; i++)
-					if (i < m_size)
-						tmp.m_array[i] = m_array[i];
+					if (i < _size)
+						tmp._ptr_start[i] = _ptr_start[i];
 					else
-						tmp.m_array[i] = val;
+						tmp._ptr_start[i] = val;
 				swap(tmp);
 				return;
 			}
 			else
 			{
-				for (size_t i = m_size; i < m_capacity; i++)
-					m_array[i] = val;
-				m_size = n;
+				for (size_t i = _size; i < _capacity; i++)
+					_ptr_start[i] = val;
+				_size = n;
 			}
 		}
 
-		size_type		capacity() const { return m_capacity; }
+		size_type		capacity() const { return _capacity; }
 
-		bool			empty() const { return m_size == 0; }
+		bool			empty() const { return _size == 0; }
 
 		/* capacity will be at least n.
 		 * if n is greater than current capacity, automatic reallocation will accur.
@@ -134,39 +131,39 @@ class vector {
 		 * This function has no effect on the vector size and cannot alter its elements.
 		 */
 		void			reserve(size_type n) {
-			if ( n > m_capacity) {
+			if ( n > _capacity) {
 				vector tmp(n);
-				tmp.m_size = m_size;
-				for (size_t i = 0; i < m_size; i++)
-					tmp.m_array[i] = m_array[i];
+				tmp._size = _size;
+				for (size_t i = 0; i < _size; i++)
+					tmp._ptr_start[i] = _ptr_start[i];
 				swap(tmp);
 			}
 		}
 
 		// element access
-		reference		operator[] (size_type n) { return m_array[n]; }
+		reference		operator[] (size_type n) { return _ptr_start[n]; }
 
-		const_reference	operator[] (size_type n) const { return m_array[n]; }
+		const_reference	operator[] (size_type n) const { return _ptr_start[n]; }
 
 		reference		at(size_type n) {
-			if (n >= m_size)
+			if (n >= _size)
 				throw std::out_of_range("ft_vector");
-			return m_array[n];
+			return _ptr_start[n];
 		}
 
 		const_reference	at(size_type n) const {
-			if (n >= m_size)
+			if (n >= _size)
 				throw std::out_of_range("ft_vector");
-			return m_array[n];
+			return _ptr_start[n];
 		}
 
-		reference		front() { return m_array[0]; }
+		reference		front() { return _ptr_start[0]; }
 
-		const_reference	front() const { return m_array[0]; }
+		const_reference	front() const { return _ptr_start[0]; }
 
-		reference		back() { return m_array[m_size - 1]; }
+		reference		back() { return _ptr_start[_size - 1]; }
 
-		const_reference	back() const { return m_array[m_size - 1]; }
+		const_reference	back() const { return _ptr_start[_size - 1]; }
 
 		// modifiers
 #if 0
@@ -177,16 +174,16 @@ class vector {
 #if 1
 
 		void			push_back(const value_type& val) {
-			if (m_size >= m_capacity)
-				reserve((m_capacity == 0) ? 1 : m_capacity * 2);
-			m_array[m_size++] = val;
+			if (_size >= _capacity)
+				reserve((_capacity == 0) ? 1 : _capacity * 2);
+			_ptr_start[_size++] = val;
 		}
 
 		void			pop_back() {
-			if (m_size) {
-				m_alloc.destroy(m_array + m_size - 1);
-//				m_array[--m_size].value_type::~value_type();
-				m_size--;
+			if (_size) {
+				_alloc.destroy(_ptr_start + _size - 1);
+//				_ptr_start[--_size].value_type::~value_type();
+				_size--;
 			}
 		}
 #endif
@@ -199,20 +196,20 @@ class vector {
 		iterator		erase(iterator first, iterator last);
 #endif
 		void			swap(vector& x) {
-			std::swap(m_array, x.m_array);
-			std::swap(m_size, x.m_size);
-			std::swap(m_capacity, x.m_capacity);
-			std::swap(m_alloc, x.m_alloc);
+			std::swap(_ptr_start, x._ptr_start);
+			std::swap(_size, x._size);
+			std::swap(_capacity, x._capacity);
+			std::swap(_alloc, x._alloc);
 		}
 
 		void			clear() {
-			while (m_size)
+			while (_size)
 				pop_back();
 		}
 
 		// Allocator
 		allocator_type	get_allocator() const {
-			return m_alloc;
+			return _alloc;
 		}
 
 };
