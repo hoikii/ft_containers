@@ -137,18 +137,33 @@ class vector {
 			}
 		}
 
-#if 0
 		// element access
-		reference		operator[] (size_type n);
-		const_reference	operator[] (size_type n) const;
-		reference		at(size_type n);
-		const_reference	at(size_type n) const;
-		reference		front();
-		const_reference	front() const;
-		reference		back();
-		const_reference	back() const;
+		reference		operator[] (size_type n) { return m_array[n]; }
+
+		const_reference	operator[] (size_type n) const { return m_array[n]; }
+
+		reference		at(size_type n) {
+			if (n >= m_size)
+				throw std::out_of_range("vector");
+			return m_array[n];
+		}
+
+		const_reference	at(size_type n) const {
+			if (n >= m_size)
+				throw std::out_of_range("vector");
+			return m_array[n];
+		}
+
+		reference		front() { return m_array[0]; }
+
+		const_reference	front() const { return m_array[0]; }
+
+		reference		back() { return m_array[m_size - 1]; }
+
+		const_reference	back() const { return m_array[m_size - 1]; }
 
 		// modifiers
+#if 0
 		template <typename InputIterator>
 		void			assign(InputIterator first, InputIterator last);	// range
 		void 			assign(size_type n, const value_type& val);			// fill
