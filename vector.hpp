@@ -34,19 +34,25 @@ class vector {
 
 	public:
 		// Ctor
-		vector(const allocator_type& alloc = allocator_type()) : m_size(0), m_capacity(0) {}							// default
-		vector(size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()) {		// fill
-//			m_array = new T[n];
-			m_array = m_alloc.allocate(n);
+
+		// default
+		vector(const allocator_type& alloc = allocator_type()) : m_array(NULL), m_size(0), m_capacity(0), m_alloc(alloc) {}
+
+		// fill
+		vector(size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()) {
+			m_alloc = alloc;
 			m_size = n;
 			m_capacity = n;
+//			m_array = new T[n];
+			m_array = m_alloc.allocate(n);
 			for (size_t i = 0; i < n; i++)
 				m_array[i] = val;
 		}
 /*
 		vec(20, 0); 의 경우 fill이 아닌 range가 선택될 수 있기 때문에 enable_if 구현이 필요하다.
+		// range
 		template <typename InputIterator>
-		vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()) {}				// range
+		vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()) {}
 */
 
 		// Dtor
@@ -104,9 +110,9 @@ class vector {
 				vector tmp(n);
 				for (size_t i = 0; i < n; i++)
 					if (i < m_size)
-						tmp[i] = m_array;
+						tmp.m_array[i] = m_array[i];
 					else
-						tmp[i] = val;
+						tmp.m_array[i] = val;
 				swap(tmp);
 				return;
 			}
@@ -114,7 +120,7 @@ class vector {
 			{
 				for (size_t i = m_size; i < m_capacity; i++)
 					m_array[i] = val;
-				size = n;
+				m_size = n;
 			}
 		}
 
@@ -144,13 +150,13 @@ class vector {
 
 		reference		at(size_type n) {
 			if (n >= m_size)
-				throw std::out_of_range("vector");
+				throw std::out_of_range("ft_vector");
 			return m_array[n];
 		}
 
 		const_reference	at(size_type n) const {
 			if (n >= m_size)
-				throw std::out_of_range("vector");
+				throw std::out_of_range("ft_vector");
 			return m_array[n];
 		}
 
