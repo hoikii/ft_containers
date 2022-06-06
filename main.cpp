@@ -3,10 +3,12 @@
 #ifdef STD
 	#include <vector>
 	#include <iterator>
+	#include <type_traits>
 	namespace ft = std;
 #else
 	#include "vector.hpp"
-	#include "reverse_iterator.hpp"
+	#include "utils/reverse_iterator.hpp"
+	#include "utils/is_integral.hpp"
 #endif
 
 void prn_vec(ft::vector<int> &v) {
@@ -145,7 +147,14 @@ int main() {
 	std::cout << "rend - rbegin	= " << v.rend() - v.rbegin() << "\n";
 	while (rev_begin != rev_end)
 		std::cout << ' ' << *rev_begin++;
-	std::cout << '\n';
+	std::cout << "\n\n";
+
+	// std::is_integral 은 -std=c++98옵션으로 테스트 불가
+	std::cout << "===== is_integral test =====\n";
+	std::cout << "int: " << std::boolalpha << ft::is_integral<int>() << "\n";
+	std::cout << "float: " << ft::is_integral<float>::value << "\n";
+	std::cout << "const int: " << ft::is_integral<const int>::value << "\n";
+
 
 }
 

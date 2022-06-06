@@ -1,7 +1,10 @@
 NAME_FT		= a_ft_container.out
 NAME_STD	= b_std_container.out
 SRCS		= main.cpp
-HEADERS		= vector.hpp random_access_iterator.hpp iterators_traits.hpp reverse_iterator.hpp
+HEADERS		= vector.hpp random_access_iterator.hpp \
+			utils/iterators_traits.hpp \
+			utils/reverse_iterator.hpp \
+			utils/is_integral.hpp
 OBJS_A		= $(SRCS:.cpp=.ft_o)
 OBJS_B		= $(SRCS:.cpp=.std_o)
 OBJS		= $(OBJS_A) $(OBJS_B)
@@ -36,7 +39,7 @@ $(NAME_STD): $(OBJS_B)
 	$(CXX) $(CXXFLAGS) -D FT -c $< -o $@
 
 %.std_o: %.cpp $(HEADERS)
-	$(CXX) $(CXXFLAGS) -D STD -c $< -o $@
+	$(CXX) $(CXXFLAGS) -D STD -std=c++11 -c $< -o $@
 
 clean:
 	@echo "$(CCBLUE) >>> clean object files. <<< $(CCEND)"
