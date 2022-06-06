@@ -130,21 +130,23 @@ int main() {
 	std::cout << "erase range\n";
 
 
-/*
+
 {
-  ft::vector<int> myvector;
-  for (int i=0; i<10; i++) myvector.push_back(i);
+	std::cout << "test for reverse iterator\n";
+	for (int i =0; i<10; i++)
+		v[i] = i;
+	prn_vec(v);
+	ft::vector<int>::reverse_iterator rev_begin = v.rbegin();
+	ft::vector<int>::reverse_iterator rev_end = v.rend();
+	std::cout << "*rbegin()	= " << *rev_begin << "\n";
+	std::cout << "*(rend()-2)	= " << *(rev_end-2) << "\n";
+	std::cout << "size		= " << v.size() << "\n";
+	std::cout << "end  -  begin	= " << v.end() - v.begin() << "\n";
+	std::cout << "rend - rbegin	= " << v.rend() - v.rbegin() << "\n";
+	while (rev_begin != rev_end)
+		std::cout << ' ' << *rev_begin++;
+	std::cout << '\n';
 
-  typedef ft::vector<int>::iterator iter_type;
-
-  ft::reverse_iterator<iter_type> rev_end (myvector.begin());
-  ft::reverse_iterator<iter_type> rev_begin (myvector.end());
-
-  std::cout << "myvector:";
-  for (iter_type it = rev_end.base(); it != rev_begin.base(); ++it)
-    std::cout << ' ' << *it;
-  std::cout << '\n';
-	
 }
-*/
+
 }

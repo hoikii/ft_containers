@@ -6,6 +6,7 @@
 # include <limits>
 # include <algorithm>
 # include "random_access_iterator.hpp"
+# include "reverse_iterator.hpp"
 
 namespace ft {
 
@@ -18,10 +19,10 @@ class vector {
 		typedef const T&			const_reference;
 		typedef T*					pointer;
 		typedef const T*			const_pointer;
-		typedef random_access_iterator<T>			iterator;
-		typedef random_access_iterator<const T>		const_iterator;
-//		typedef reverse_iterator<iterator>			reverse_iterator;
-//		typedef reverse_iterator<const_iterator>	const_reverse_iterator;
+		typedef random_access_iterator<T>				iterator;
+		typedef random_access_iterator<const T>			const_iterator;
+		typedef ft::reverse_iterator<iterator>			reverse_iterator;
+		typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 		typedef ptrdiff_t			difference_type;
 		typedef size_t				size_type;
 
@@ -78,12 +79,10 @@ class vector {
 		const_iterator			begin() const	{ return const_iterator(_ptr_start); }
 		iterator				end() 			{ return iterator(_ptr_start + _size); }
 		const_iterator			end() const		{ return const_iterator(_ptr_start + _size); }
-#if 0
-		reverse_iterator		rbegin() {}
-		const_reverse_iterator	rbegin() const	{}
-		reverse_iterator		rend() {}
-		const_reverse_iterator	rend() const	{}
-#endif
+		reverse_iterator		rbegin()		{ return reverse_iterator(_ptr_start + _size); }
+		const_reverse_iterator	rbegin() const	{ return const_reverse_iterator(_ptr_start + _size); }
+		reverse_iterator		rend()			{ return reverse_iterator(_ptr_start); }
+		const_reverse_iterator	rend() const	{ return cosnt_reverse_iterator(_ptr_start); }
 
 		// capacity
 		size_type		size() const { return _size; }

@@ -1,7 +1,7 @@
 NAME_FT		= a_ft_container.out
 NAME_STD	= b_std_container.out
 SRCS		= main.cpp
-HEADERS		= vector.hpp random_access_iterator.hpp
+HEADERS		= vector.hpp random_access_iterator.hpp iterators_traits.hpp reverse_iterator.hpp
 OBJS_A		= $(SRCS:.cpp=.ft_o)
 OBJS_B		= $(SRCS:.cpp=.std_o)
 OBJS		= $(OBJS_A) $(OBJS_B)

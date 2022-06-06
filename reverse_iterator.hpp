@@ -70,10 +70,47 @@ class reverse_iterator {
 		}
 };
 
-//non-member
-//relational
-//+
-//-
+// non-member relational operators
+template <typename Iter>
+bool operator==(const reverse_iterator<Iter>& lhs, const reverse_iterator<Iter>& rhs) {
+	return lhs.base() == rhs.base();
+}
+
+template <typename Iter>
+bool operator!=(const reverse_iterator<Iter>& lhs, const reverse_iterator<Iter>& rhs) {
+	return lhs.base() != rhs.base();
+}
+
+template <typename Iter>
+bool operator>(const reverse_iterator<Iter>& lhs, const reverse_iterator<Iter>& rhs) {
+	return lhs.base() > rhs.base();
+}
+
+template <typename Iter>
+bool operator>=(const reverse_iterator<Iter>& lhs, const reverse_iterator<Iter>& rhs) {
+	return lhs.base() >= rhs.base();
+}
+
+template <typename Iter>
+bool operator<(const reverse_iterator<Iter>& lhs, const reverse_iterator<Iter>& rhs) {
+	return lhs.base() < rhs.base();
+}
+
+template <typename Iter>
+bool operator<=(const reverse_iterator<Iter>& lhs, const reverse_iterator<Iter>& rhs) {
+	return lhs.base() <= rhs.base();
+}
+
+// non-member addition/substraction operator
+template <typename Iter>
+reverse_iterator<Iter> operator+(typename reverse_iterator<Iter>::difference n, const reverse_iterator<Iter>& rhs) {
+	return rhs + n;
+}
+
+template <typename Iter>
+typename reverse_iterator<Iter>::difference_type operator-(const reverse_iterator<Iter>& lhs, const reverse_iterator<Iter>& rhs) {
+	return rhs.base() - lhs.base();
+}
 
 }
 
