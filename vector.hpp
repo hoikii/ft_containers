@@ -68,7 +68,8 @@ class vector {
 		}
 		// operator=
 		vector& operator=(const vector& rhs) {
-			// TODO: copy-and-swap
+			vector tmp(rhs);
+			swap(tmp);
 			return *this;
 		}
 

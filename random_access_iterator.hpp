@@ -105,14 +105,14 @@ class random_access_iterator {
 			return _p - n;
 		}
 
-		difference_type operator-(random_access_iterator &rhs) const {
+		difference_type operator-(const random_access_iterator &rhs) const {
 			return _p - rhs._p;
 		}
 };
 
 // 덧셈의 교환법칙(정수+반복자) 성립 위해서 non-member operator overload 필요
 template <typename T>
-ft::random_access_iterator<T> operator+(typename ft::random_access_iterator<T>::difference_type n, ft::random_access_iterator<T> &it) {
+ft::random_access_iterator<T> operator+(typename ft::random_access_iterator<T>::difference_type n, const ft::random_access_iterator<T> &it) {
 	return it + n;
 }
 
