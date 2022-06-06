@@ -1,10 +1,9 @@
 #ifndef RANDOM_ACCESS_ITERATOR_HPP
 # define RANDOM_ACCESS_ITERATOR_HPP
 
-namespace ft {
+# include "iterators_traits.hpp"
 
-// Empty class to identify the category of an iterator as a random access iterator.
-struct random_access_iterator_tag {};
+namespace ft {
 
 template <typename T>
 class random_access_iterator {
