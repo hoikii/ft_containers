@@ -7,6 +7,8 @@
 # include <algorithm>
 # include "random_access_iterator.hpp"
 # include "utils/reverse_iterator.hpp"
+# include "utils/enable_if.hpp"
+# include "utils/is_integral.hpp"
 
 namespace ft {
 
@@ -47,12 +49,23 @@ class vector {
 			for (size_t i = 0; i < n; i++)
 				_ptr_start[i] = val;
 		}
-/*
-		vec(20, 0); 의 경우 fill이 아닌 range가 선택될 수 있기 때문에 enable_if 구현이 필요하다.
+
 		// range
+		// 템플릿 인자가 (정수형,정수형)인 경우, range initializer를 오버로딩 후보군에서 제외한다.
 		template <typename InputIterator>
-		vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()) {}
-*/
+		vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
+			typename std::enable_if<!std::is_integral<InputIterator>::value>::type * = 0)
+		{
+			// FIXME: 인자가 bidi-iterator 이하인 경우를 위해 std::distance로 대체
+			difference_type n = last - first;
+			_alloc = alloc;
+			_size = n;
+			_capacity = n;
+			_ptr_start = _alloc.allocate(n);
+			for (difference_type i = 0; i < n; i++)
+				_ptr_start[i] = *(first++);
+		}
+
 
 		// Dtor
 		~vector() {

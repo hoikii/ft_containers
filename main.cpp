@@ -153,8 +153,12 @@ int main() {
 	std::cout << "===== is_integral test =====\n";
 	std::cout << "int: " << std::boolalpha << ft::is_integral<int>() << "\n";
 	std::cout << "float: " << ft::is_integral<float>::value << "\n";
-	std::cout << "const int: " << ft::is_integral<const int>::value << "\n";
+	std::cout << "const int: " << ft::is_integral<const int>::value << "\n\n";
 
+
+	std::cout << " === initialize by iterator ===\n";
+	ft::vector<int> v2(v.begin() + 3, v.end() - 4);
+	prn_vec(v2);
 
 }
 

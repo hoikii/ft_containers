@@ -1,8 +1,6 @@
 #ifndef is_integral_HPP
 # define is_integral_HPP
 
-# include <uchar.h>
-
 /* is_integral<T>는 자료형 T가 정수형인지 여부를 판별하는 bool value를 멤버상수로 갖는다.
  * operator bool() 은 객체 자신이 bool 로 암시적 형변환될 때 쓰임.
  * if (is_integral<int>::value)   또는 if (is_integral<int>() )
