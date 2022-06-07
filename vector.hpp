@@ -56,8 +56,7 @@ class vector {
 		vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
 			typename std::enable_if<!std::is_integral<InputIterator>::value>::type * = 0)
 		{
-			// FIXME: 인자가 bidi-iterator 이하인 경우를 위해 std::distance로 대체
-			difference_type n = last - first;
+			difference_type n = std::distance(first, last);
 			_alloc = alloc;
 			_size = n;
 			_capacity = n;

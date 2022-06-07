@@ -1,7 +1,9 @@
 #include <iostream>
 #include <typeinfo>
+#include <vector>
+#include <list>
+
 #ifdef STD
-	#include <vector>
 	#include <iterator>
 	#include <type_traits>
 	namespace ft = std;
@@ -156,9 +158,18 @@ int main() {
 	std::cout << "const int: " << ft::is_integral<const int>::value << "\n\n";
 
 
+{
 	std::cout << " === initialize by iterator ===\n";
 	ft::vector<int> v2(v.begin() + 3, v.end() - 4);
 	prn_vec(v2);
+}
+
+{
+	std::cout << " === initialize by std::list<>::iterator ===\n";
+	std::list<int> tmp(5, 42);
+	ft::vector<int> v2(tmp.begin(), tmp.end());
+	prn_vec(v2);
+}
 
 }
 
