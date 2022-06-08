@@ -53,8 +53,9 @@ class vector {
 		// range
 		// 템플릿 인자가 (정수형,정수형)인 경우, range initializer를 오버로딩 후보군에서 제외한다.
 		template <typename InputIterator>
-		vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
-			typename std::enable_if<!std::is_integral<InputIterator>::value>::type * = 0)
+		vector(InputIterator first,
+			typename ft::enable_if< ! ft::is_integral<InputIterator>::value , InputIterator >::type last,
+			const allocator_type& alloc = allocator_type() )
 		{
 			difference_type n = std::distance(first, last);
 			_alloc = alloc;
@@ -64,7 +65,6 @@ class vector {
 			for (difference_type i = 0; i < n; i++)
 				_ptr_start[i] = *(first++);
 		}
-
 
 		// Dtor
 		~vector() {
@@ -79,6 +79,7 @@ class vector {
 			for (size_t i = 0; i < _size; i++)
 				_ptr_start[i] = other._ptr_start[i];
 		}
+
 		// operator=
 		vector& operator=(const vector& rhs) {
 			vector tmp(rhs);
