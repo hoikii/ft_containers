@@ -9,7 +9,7 @@
 # include "utils/reverse_iterator.hpp"
 # include "utils/enable_if.hpp"
 # include "utils/is_integral.hpp"
-#include <iostream>
+# include "utils/lexicographical_compare.hpp"
 
 /* std::allocator
  * 메모리 할당과 해제를 관리하는 클래스
@@ -340,6 +340,45 @@ class vector {
 };
   
 // relational operators (==, !=, <, <=, >, >=)
+template <typename T, typename Alloc>
+bool operator==(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs) {
+	if (lhs.size() != rhs.size())
+		return false;
+	typename ft::vector<T>::const_iterator itl = lhs.begin();
+	typename ft::vector<T>::const_iterator itr = rhs.begin();
+	while (itl != lhs.end()) {
+		if (*itl != *itr)
+			return false;
+		itl++;
+		itr++;
+	}
+	return true;
+}
+
+template <typename T, typename Alloc>
+bool operator<(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs) {
+	return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+}
+
+template <typename T, typename Alloc>
+bool operator!=(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs) {
+	return !(lhs==rhs);
+}
+
+template <typename T, typename Alloc>
+bool operator>(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs) {
+	return (rhs < lhs);
+}
+
+template <typename T, typename Alloc>
+bool operator<=(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs) {
+	return !(rhs < lhs);
+}
+
+template <typename T, typename Alloc>
+bool operator>=(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs) {
+	return !(lhs < rhs);
+}
 
 // non-member function overloads
 template <typename T, typename Alloc>

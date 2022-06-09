@@ -198,5 +198,58 @@ int main() {
 	prn_vec(tmp);
 }
 
-
+	std::cout << "=== compare two vectors ===\n";
+	{
+		ft::vector<int> foo(3, 100);
+		ft::vector<int> bar(2, 200);
+		std::cout << (foo < bar) << "\n";
+	}
+	{
+		int a1[] = {1,2,3,4,5};
+		int a2[] = {1,2,3,4,5};
+		ft::vector<int> v1(a1, a1 + 5);
+		ft::vector<int> v2(a2, a2 + 6);
+		std::cout << (v1==v2) << "\n";
+		std::cout << (v1!=v2) << "\n";
+		std::cout << (v1<v2) << "\n";
+		std::cout << (v1<=v2) << "\n";
+		std::cout << (v1>v2) << "\n";
+		std::cout << (v1>=v2) << "\n";
+	}
+	{
+		int a1[] = {1,2,3,4,5};
+		int a2[] = {1,2,3,4,6};
+		ft::vector<int> v1(a1, a1 + 5);
+		ft::vector<int> v2(a2, a2 + 6);
+		std::cout << (v1==v2) << "\n";
+		std::cout << (v1!=v2) << "\n";
+		std::cout << (v1<v2) << "\n";
+		std::cout << (v1<=v2) << "\n";
+		std::cout << (v1>v2) << "\n";
+		std::cout << (v1>=v2) << "\n";
+	}
+	{
+		int a1[] = {1,2,3,4,5};
+		int a2[] = {1,2,3,4,5,6};
+		ft::vector<int> v1(a1, a1 + 5);
+		ft::vector<int> v2(a2, a2 + 6);
+		std::cout << (v1==v2) << "\n";
+		std::cout << (v1!=v2) << "\n";
+		std::cout << (v1<v2) << "\n";
+		std::cout << (v1<=v2) << "\n";
+		std::cout << (v1>v2) << "\n";
+		std::cout << (v1>=v2) << "\n";
+	}
+	{
+		int a1[] = {1,2,3,4,5};
+		int a2[] = {1,2,3,4};
+		ft::vector<int> v1(a1, a1 + 5);
+		ft::vector<int> v2(a2, a2 + 4);
+		std::cout << (v1==v2) << "\n";
+		std::cout << (v1!=v2) << "\n";
+		std::cout << (v1<v2) << "\n";
+		std::cout << (v1<=v2) << "\n";
+		std::cout << (v1>v2) << "\n";
+		std::cout << (v1>=v2) << "\n";
+	}
 }
