@@ -9,6 +9,7 @@
 # include "utils/reverse_iterator.hpp"
 # include "utils/enable_if.hpp"
 # include "utils/is_integral.hpp"
+#include <iostream>
 
 namespace ft {
 
@@ -57,17 +58,18 @@ class vector {
 			typename ft::enable_if< ! ft::is_integral<InputIterator>::value , InputIterator >::type last,
 			const allocator_type& alloc = allocator_type() )
 		{
-			difference_type n = std::distance(first, last);
+			size_type n = std::distance(first, last);
 			_alloc = alloc;
 			_size = n;
 			_capacity = n;
 			_ptr_start = _alloc.allocate(n);
-			for (difference_type i = 0; i < n; i++)
+			for (size_type i = 0; i < n; i++)
 				_ptr_start[i] = *(first++);
 		}
 
 		// Dtor
 		~vector() {
+			clear();
 			if (_ptr_start)
 				_alloc.deallocate(_ptr_start, _capacity);
 		}
@@ -176,12 +178,25 @@ class vector {
 		const_reference	back() const	{ return _ptr_start[_size - 1]; }
 
 		// modifiers
-#if 0
+		// range
 		template <typename InputIterator>
-		void			assign(InputIterator first, InputIterator last);	// range
-		void 			assign(size_type n, const value_type& val);			// fill
-#endif
-#if 1
+		void			assign(InputIterator first, typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type last) {
+			clear();
+			size_type n = std::distance(first, last);
+			if (n > _capacity)
+				reserve(n);
+			while (first != last)
+				push_back(*first++);
+		}
+
+		// fill
+		void 			assign(size_type n, const value_type& val) {
+			clear();
+			if (n > _capacity)
+				reserve(n);
+			for (size_t i = 0; i < n; i++)
+				push_back(val);
+		}
 
 		void			push_back(const value_type& val) {
 			if (_size >= _capacity)
@@ -196,15 +211,125 @@ class vector {
 				_size--;
 			}
 		}
-#endif
-#if 0
-		iterator		insert(iterator position, const value_type& val);					// single element
-		void			insert(iterator position, size_type n, const value_type& val);		// fill
+
+		// insert, erase: capacity 변화가 없으면 삽입,삭제된 요소 이전을 가리키는 iterator들은 유효해야 한다.
+		// single element
+		iterator		insert(iterator position, const value_type& val) {
+			pointer p_pos = &(*position);
+			if (_size < _capacity) {
+				iterator i = end() - 1;
+				for (i = end() -1; i != position; i--)
+					*i = *(i - 1);
+				*i = val;
+				_size++;
+			}
+			else {
+				vector tmp;
+				tmp.reserve(_size + 1);
+				iterator i = begin();
+				for (i = begin(); i != position; i++)
+					(tmp._ptr_start)[&(*i) - _ptr_start] = *i;
+				(tmp._ptr_start)[&(*i) - _ptr_start] = val;
+				for (i = position; i != end(); i++)
+					(tmp._ptr_start)[&(*i) - _ptr_start + 1] = *i;
+				swap(tmp);
+				return iterator(_ptr_start + &(*position) - &(*tmp.begin()));
+
+			}
+		}
+
+		//fill
+		void			insert(iterator position, size_type n, const value_type& val) {
+			size_type insertion_idx = position - begin();
+
+			if (_size + n <= _capacity) {
+				for (size_type i = _size + n; i > insertion_idx; i--)
+					_ptr_start[i] = _ptr_start[i - n];
+				_size += n;
+				while (n)
+					_ptr_start[insertion_idx + n-- - 1] = val;
+			}
+			else
+			{
+				vector tmp(_alloc);
+				tmp.reserve(_size + n);
+				tmp._size = _size + n;
+				for (size_type i = 0; i < insertion_idx; i++)
+					tmp[i] = *(_ptr_start + i);
+				for (size_type i = insertion_idx; i < insertion_idx + n; i++)
+					tmp[i] = val;
+				for (size_type i = insertion_idx + n; i < _size + n; i++)
+					tmp[i] = *(_ptr_start + i - n);
+				swap(tmp);
+			}
+		}
+
+		// range
 		template <typename InputIterator>
-		void			isert(iterator position, InputIterator first, InputIterator last);	//range
-		iterator		erase(iterator position);
-		iterator		erase(iterator first, iterator last);
-#endif
+		void			insert(iterator position,
+							InputIterator first,
+							typename ft::enable_if< ! ft::is_integral<InputIterator>::value, InputIterator>::type last)
+		{
+			size_type n = std::distance(first, last);
+			size_type insertion_idx = position - begin();
+
+			if (_size + n <= _capacity) {
+				for (size_type i = _size + n; i > insertion_idx; i--)
+					_ptr_start[i] = _ptr_start[i - n];
+				size_type i = 0;
+				while (first != last)
+					_ptr_start[insertion_idx + i++] = *(first++);
+				_size += n;
+			}
+			else
+			{
+				vector tmp(_alloc);
+				tmp.reserve(_size + n);
+				tmp._size = _size + n;
+				for (size_type i = 0; i < insertion_idx; i++)
+					tmp[i] = *(_ptr_start + i);
+				for (size_type i = insertion_idx; i < insertion_idx + n; i++)
+					tmp[i] = *(first++);
+				for (size_type i = insertion_idx + n; i < _size + n; i++)
+					tmp[i] = *(_ptr_start + i - n);
+				swap(tmp);
+			}
+		}
+
+		iterator		erase(iterator position) {
+			pointer p_pos = &(*position);
+			if (position + 1 == end())
+				pop_back();
+			else
+			{
+				// invalid position or range [first,last) causes undefined behavior
+				for (size_type i = p_pos - _ptr_start; i < _size; i++) {
+					_alloc.destroy(_ptr_start + i);
+					_ptr_start[i] = _ptr_start[i + 1];
+				}
+				_alloc.destroy(_ptr_start + _size);
+				_size--;
+			}
+			return iterator(p_pos);
+
+		}
+
+		iterator		erase(iterator first, iterator last) {
+			// pointer p_pos = &(*first);
+			if (last + 1 == end()) {
+				while (first != last--)
+					pop_back();
+			}
+			else {
+				size_t n = last - first;
+				for (size_t i = &(*first) - _ptr_start; i < _size - n; i++) {
+					_ptr_start[i] = _ptr_start[i+n];
+				}
+				_size -= n;
+			}
+			return first;
+		}
+
 		void			swap(vector& x) {
 			std::swap(_ptr_start, x._ptr_start);
 			std::swap(_size, x._size);

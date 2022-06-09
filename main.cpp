@@ -124,16 +124,6 @@ int main() {
 	std::cout << "differencetype of iterator: " << typeid(ft::iterator_traits<itType>::difference_type).name() << std::endl;
 	std::cout << "category of iterator: " << typeid(ft::iterator_traits<itType>::iterator_category).name() << std::endl;
 
-	std::cout << "\n iterator로 range construct\n";
-	std::cout << "assign range\n";
-	std::cout << "insert single element\n";
-	std::cout << "insert fill\n";
-	std::cout << "insert range\n";
-
-	std::cout << "erase single element\n";
-	std::cout << "erase range\n";
-
-
 
 {
 	std::cout << "test for reverse iterator\n";
@@ -150,6 +140,7 @@ int main() {
 	while (rev_begin != rev_end)
 		std::cout << ' ' << *rev_begin++;
 	std::cout << "\n\n";
+}
 
 	// std::is_integral 은 -std=c++98옵션으로 테스트 불가
 	std::cout << "===== is_integral test =====\n";
@@ -171,6 +162,41 @@ int main() {
 	prn_vec(v2);
 }
 
+{
+	std::cout << "=== assign(fill) ===\n";
+	ft::vector<int> tmp(10, 0);
+	tmp.assign(3, 42);
+	prn_vec(tmp);
 }
+
+{
+	std::cout << "=== assign(range) by std::list<>::iterator ===\n";
+	ft::vector<int> tmp(10, 0);
+	std::list<int> lst(15, 42);
+	tmp.assign(lst.begin(), lst.end());
+	prn_vec(tmp);
+}
+	std::cout << "=== erase ===\n";
+	//ft::vector<int>::iterator it = v.erase(v.end() - 3);
+	it = v.erase(v.end() - 3);
+	std::cout << "return value points to " << *it << " ";
+	prn_vec(v);
+
+	std::cout << "=== erase range ===\n";
+	v.erase(v.begin()+3, v.begin()+5);
+	prn_vec(v);
+
+	std::cout << "=== insert(fill) ===\n";
+	v.insert(v.begin() + 3, 3, 42);
+	prn_vec(v);
+
+{
+	std::cout << "=== insert(range) by std::list<>::iterator ===\n";
+	ft::vector<int> tmp;
+	std::list<int> lst(15, 42);
+	tmp.insert(tmp.begin(), lst.begin(), lst.end());
+	prn_vec(tmp);
+}
+
 
 }
