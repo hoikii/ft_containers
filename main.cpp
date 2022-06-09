@@ -11,6 +11,7 @@
 	#include "vector.hpp"
 	#include "utils/reverse_iterator.hpp"
 	#include "utils/is_integral.hpp"
+	#include "utils/pair.hpp"
 #endif
 
 void prn_vec(ft::vector<int> &v) {
@@ -252,4 +253,25 @@ int main() {
 		std::cout << (v1>v2) << "\n";
 		std::cout << (v1>=v2) << "\n";
 	}
+
+	{
+		std::cout << "=== pair ===\n";
+		ft::pair<int,char> foo(10, 'a');
+		ft::pair<int,char> bar(10, 'z');
+		std::cout << "foo = (" << foo.first << ", " << foo.second << ")\n";
+		std::cout << "bar = (" << bar.first << ", " << bar.second << ")\n";
+		std::cout << "foo == bar : " << (foo == bar) << "\n";
+		std::cout << "foo < bar : " << (foo < bar) << "\n";
+		ft::pair<std::string, double> p1;
+		ft::pair<std::string, double> p2("tomatoes", 2.3);
+		ft::pair<std::string, double> p3(p2);
+		p1 = ft::make_pair("lightbulbs", 0.99);
+		p2.first = "shoes"; p2.second = 49;
+		std::cout << "p1 = (" << p1.first << ", " << p1.second << ")\n";
+		std::cout << "p2 = (" << p2.first << ", " << p2.second << ")\n";
+		std::cout << "p3 = (" << p3.first << ", " << p3.second << ")\n";
+	}
+
+
+
 }
