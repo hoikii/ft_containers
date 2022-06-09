@@ -158,6 +158,8 @@ class vector {
 		 */
 		void			reserve(size_type n) {
 			if ( n > _capacity) {
+				if (n > max_size())
+					throw std::length_error("ft_vector");
 				vector tmp(_alloc);
 				tmp._ptr_start = _alloc.allocate(n);
 				tmp._capacity = n;
@@ -310,12 +312,13 @@ class vector {
 					pop_back();
 			}
 			else {
-				size_t n = last - first;
-				for (size_t i = &(*first) - _ptr_start; i < _size - n; i++) {
+				size_type n = last - first;
+				for (size_type i = &(*first) - _ptr_start; i < _size - n; i++) {
 					_alloc.destroy(_ptr_start + i);
 					_alloc.construct(_ptr_start + i, _ptr_start[i+n]);
 				}
-				_size -= n;
+				while (n--)
+					pop_back();
 			}
 			return first;
 		}
