@@ -11,6 +11,16 @@
 # include "utils/is_integral.hpp"
 #include <iostream>
 
+/* std::allocator
+ * 메모리 할당과 해제를 관리하는 클래스
+ * STL 컨테이너는 기본적으로 메모리 관리를 위해 std::allocator를 사용하며, 커스터마이즈된 메모리 모델을 사용할 수도 있다.
+ *
+ * std::allocator::allocate(n)       : n개의 elements를 저장할 수 있는 메모리블록을 할당하고 첫번째 원소를 가리키는 pointer를 반환
+ * std::allocator::deallocate(p, n)  : p 부터 p+n 까지의 메모리블록을 해제
+ * std::allocator::construct(p, val) : p가 가리키는 곳에 object val의 생성자를 대입
+ * std::allocator::destroy(p)        : p가 가리키는 object의 소멸자 호출 (해당 object의 메모리 반환은 사용자의 책임)
+ */
+
 namespace ft {
 
 template < typename T, typename Alloc = std::allocator<T> >
@@ -48,7 +58,7 @@ class vector {
 			_capacity = n;
 			_ptr_start = _alloc.allocate(n);
 			for (size_t i = 0; i < n; i++)
-				_ptr_start[i] = val;
+				_alloc.construct(_ptr_start + i, val);
 		}
 
 		// range
@@ -64,7 +74,7 @@ class vector {
 			_capacity = n;
 			_ptr_start = _alloc.allocate(n);
 			for (size_type i = 0; i < n; i++)
-				_ptr_start[i] = *(first++);
+				_alloc.construct(_ptr_start + i, *(first++));
 		}
 
 		// Dtor
@@ -73,13 +83,14 @@ class vector {
 			if (_ptr_start)
 				_alloc.deallocate(_ptr_start, _capacity);
 		}
+
 		// Copy Ctor
 		vector(const vector& other) {
 			_ptr_start = _alloc.allocate(other._capacity);
 			_size = other._size;
 			_capacity = other._capacity;
 			for (size_t i = 0; i < _size; i++)
-				_ptr_start[i] = other._ptr_start[i];
+				_alloc.construct(_ptr_start + i, other._ptr_start[i]);
 		}
 
 		// operator=
@@ -118,19 +129,20 @@ class vector {
 		void			resize(size_type n, value_type val = value_type()) {
 			if (n > _capacity)
 			{
-				vector tmp(n);
+				vector tmp(_alloc);
+				tmp.reserve(n);
+				tmp._size = n;
 				for (size_t i = 0; i < n; i++)
 					if (i < _size)
-						tmp._ptr_start[i] = _ptr_start[i];
+						_alloc.construct(tmp._ptr_start + i, _ptr_start[i]);
 					else
-						tmp._ptr_start[i] = val;
+						_alloc.construct(tmp._ptr_start + i, val);
 				swap(tmp);
-				return;
 			}
 			else
 			{
 				for (size_t i = _size; i < _capacity; i++)
-					_ptr_start[i] = val;
+					_alloc.construct(_ptr_start + i, val);
 				_size = n;
 			}
 		}
@@ -146,10 +158,12 @@ class vector {
 		 */
 		void			reserve(size_type n) {
 			if ( n > _capacity) {
-				vector tmp(n);
+				vector tmp(_alloc);
+				tmp._ptr_start = _alloc.allocate(n);
+				tmp._capacity = n;
 				tmp._size = _size;
 				for (size_t i = 0; i < _size; i++)
-					tmp._ptr_start[i] = _ptr_start[i];
+					_alloc.construct(tmp._ptr_start + i, _ptr_start[i]);
 				swap(tmp);
 			}
 		}
@@ -201,41 +215,21 @@ class vector {
 		void			push_back(const value_type& val) {
 			if (_size >= _capacity)
 				reserve((_capacity == 0) ? 1 : _capacity * 2);
-			_ptr_start[_size++] = val;
+			_alloc.construct(_ptr_start + _size++, val);
 		}
 
 		void			pop_back() {
-			if (_size) {
+			if (_size)
 				_alloc.destroy(_ptr_start + _size - 1);
-//				_ptr_start[--_size].value_type::~value_type();
-				_size--;
-			}
+			_size--;
 		}
 
 		// insert, erase: capacity 변화가 없으면 삽입,삭제된 요소 이전을 가리키는 iterator들은 유효해야 한다.
 		// single element
 		iterator		insert(iterator position, const value_type& val) {
-			pointer p_pos = &(*position);
-			if (_size < _capacity) {
-				iterator i = end() - 1;
-				for (i = end() -1; i != position; i--)
-					*i = *(i - 1);
-				*i = val;
-				_size++;
-			}
-			else {
-				vector tmp;
-				tmp.reserve(_size + 1);
-				iterator i = begin();
-				for (i = begin(); i != position; i++)
-					(tmp._ptr_start)[&(*i) - _ptr_start] = *i;
-				(tmp._ptr_start)[&(*i) - _ptr_start] = val;
-				for (i = position; i != end(); i++)
-					(tmp._ptr_start)[&(*i) - _ptr_start + 1] = *i;
-				swap(tmp);
-				return iterator(_ptr_start + &(*position) - &(*tmp.begin()));
-
-			}
+			size_type insertion_idx = position - begin();
+			insert(position, 1, val);
+			return begin() + insertion_idx;
 		}
 
 		//fill
@@ -243,11 +237,15 @@ class vector {
 			size_type insertion_idx = position - begin();
 
 			if (_size + n <= _capacity) {
-				for (size_type i = _size + n; i > insertion_idx; i--)
-					_ptr_start[i] = _ptr_start[i - n];
+				for (size_type i = _size + n; i > insertion_idx; i--) {
+					_alloc.destroy(_ptr_start + i);
+					_alloc.construct(_ptr_start + i, _ptr_start[i-n]);
+				}
 				_size += n;
-				while (n)
-					_ptr_start[insertion_idx + n-- - 1] = val;
+				while (n) {
+					_alloc.destroy(_ptr_start + insertion_idx + n - 1);
+					_alloc.construct(_ptr_start + insertion_idx + n-- - 1, val);
+				}
 			}
 			else
 			{
@@ -255,11 +253,11 @@ class vector {
 				tmp.reserve(_size + n);
 				tmp._size = _size + n;
 				for (size_type i = 0; i < insertion_idx; i++)
-					tmp[i] = *(_ptr_start + i);
+					_alloc.construct(tmp._ptr_start + i, _ptr_start[i]);
 				for (size_type i = insertion_idx; i < insertion_idx + n; i++)
-					tmp[i] = val;
+					_alloc.construct(tmp._ptr_start + i, val);
 				for (size_type i = insertion_idx + n; i < _size + n; i++)
-					tmp[i] = *(_ptr_start + i - n);
+					_alloc.construct(tmp._ptr_start + i, _ptr_start[i-n]);
 				swap(tmp);
 			}
 		}
@@ -274,11 +272,15 @@ class vector {
 			size_type insertion_idx = position - begin();
 
 			if (_size + n <= _capacity) {
-				for (size_type i = _size + n; i > insertion_idx; i--)
-					_ptr_start[i] = _ptr_start[i - n];
+				for (size_type i = _size + n; i > insertion_idx; i--) {
+					_alloc.destroy(_ptr_start + i);
+					_alloc.construct(_ptr_start + i, _ptr_start[i - n]);
+				}
 				size_type i = 0;
-				while (first != last)
-					_ptr_start[insertion_idx + i++] = *(first++);
+				while (first != last) {
+					_alloc.destroy(_ptr_start + insertion_idx + i);
+					_alloc.construct(_ptr_start + insertion_idx + i++, *(first++));
+				}
 				_size += n;
 			}
 			else
@@ -287,43 +289,31 @@ class vector {
 				tmp.reserve(_size + n);
 				tmp._size = _size + n;
 				for (size_type i = 0; i < insertion_idx; i++)
-					tmp[i] = *(_ptr_start + i);
+					_alloc.construct(tmp._ptr_start + i, _ptr_start[i]);
 				for (size_type i = insertion_idx; i < insertion_idx + n; i++)
-					tmp[i] = *(first++);
+					_alloc.construct(tmp._ptr_start + i, *(first++));
 				for (size_type i = insertion_idx + n; i < _size + n; i++)
-					tmp[i] = *(_ptr_start + i - n);
+					_alloc.construct(tmp._ptr_start + i, _ptr_start[i-n]);
 				swap(tmp);
 			}
 		}
 
+		// invalid position or range [first,last) causes undefined behavior
 		iterator		erase(iterator position) {
-			pointer p_pos = &(*position);
-			if (position + 1 == end())
-				pop_back();
-			else
-			{
-				// invalid position or range [first,last) causes undefined behavior
-				for (size_type i = p_pos - _ptr_start; i < _size; i++) {
-					_alloc.destroy(_ptr_start + i);
-					_ptr_start[i] = _ptr_start[i + 1];
-				}
-				_alloc.destroy(_ptr_start + _size);
-				_size--;
-			}
-			return iterator(p_pos);
-
+			return erase(position, position + 1);
 		}
 
 		iterator		erase(iterator first, iterator last) {
 			// pointer p_pos = &(*first);
-			if (last + 1 == end()) {
+			if (last == end()) {
 				while (first != last--)
 					pop_back();
 			}
 			else {
 				size_t n = last - first;
 				for (size_t i = &(*first) - _ptr_start; i < _size - n; i++) {
-					_ptr_start[i] = _ptr_start[i+n];
+					_alloc.destroy(_ptr_start + i);
+					_alloc.construct(_ptr_start + i, _ptr_start[i+n]);
 				}
 				_size -= n;
 			}
