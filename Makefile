@@ -4,7 +4,12 @@ SRCS		= main.cpp
 HEADERS		= vector.hpp random_access_iterator.hpp \
 			utils/iterators_traits.hpp \
 			utils/reverse_iterator.hpp \
-			utils/is_integral.hpp
+			utils/is_integral.hpp \
+			utils/enable_if.hpp \
+			utils/pair.hpp \
+			utils/lexicographical_compare.hpp \
+			utils/Binary_Search_Tree.hpp \
+			map.hpp tree_iterator.hpp
 OBJS_A		= $(SRCS:.cpp=.ft_o)
 OBJS_B		= $(SRCS:.cpp=.std_o)
 OBJS		= $(OBJS_A) $(OBJS_B)

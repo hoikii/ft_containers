@@ -6,12 +6,14 @@
 #ifdef STD
 	#include <iterator>
 	#include <type_traits>
+	#include <map>
 	namespace ft = std;
 #else
 	#include "vector.hpp"
 	#include "utils/reverse_iterator.hpp"
 	#include "utils/is_integral.hpp"
 	#include "utils/pair.hpp"
+	#include "map.hpp"
 #endif
 
 void prn_vec(ft::vector<int> &v) {
@@ -272,6 +274,47 @@ int main() {
 		std::cout << "p3 = (" << p3.first << ", " << p3.second << ")\n";
 	}
 
+
+	std::cout << "\n\n=== map ===\n";
+	ft::map<char,int> m;
+	ft::map<char,int>::iterator it_m;
+	std::cout << "(begin==end) : " << (m.begin() == m.end()) << "     size= " << m.size() << "\n";
+	m.insert(ft::pair<char,int>('a',1));
+	m.insert(ft::pair<char,int>('b',2));
+	m.insert(ft::pair<char,int>('c',3));
+	m.insert(ft::pair<char,int>('c',8));
+	m.insert(ft::pair<char,int>('c',9));
+	m.insert(ft::pair<char,int>('d',4));
+	m.insert(ft::pair<char,int>('e',5));
+	std::cout << "empty : " << m.empty() << "           size= " << m.size() << "\n";
+	
+	std::cout << "\nvalue of 'b' : " << m.find('b')->second << "\n";
+	m['b'] = 42;
+	std::cout << "\nchange value of 'b' by idx : " << m.find('b')->second << "\n";
+
+	std::cout << "size= " << m.size() << "   ";
+	for (it_m = m.begin(); it_m != m.end(); it_m++)
+		std::cout << (*it_m).first << ":" << (*it_m).second << "   ";
+
+	m.erase('c');
+	std::cout << "\n\nerase 'c'\n";
+	std::cout << "size= " << m.size() << "   ";
+	for (it_m = m.begin(); it_m != m.end(); it_m++)
+		std::cout << (*it_m).first << ":" << (*it_m).second << "   ";
+
+	m.erase('a');
+	std::cout << "\n\nerase 'a'\n";
+	std::cout << "size= " << m.size() << "   ";
+	for (it_m = m.begin(); it_m != m.end(); it_m++)
+		std::cout << (*it_m).first << ":" << (*it_m).second << "   ";
+
+	m.erase('b');
+	std::cout << "\n\nerase 'b'\n";
+	std::cout << "size= " << m.size() << "   ";
+	for (it_m = m.begin(); it_m != m.end(); it_m++)
+		std::cout << (*it_m).first << ":" << (*it_m).second << "   ";
+
+	std::cout << "\n  \n";
 
 
 }

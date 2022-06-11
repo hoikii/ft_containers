@@ -26,13 +26,13 @@ namespace ft {
 template <typename KV_Pair>
 struct nodeBase {
 	typedef typename KV_Pair::first_type KeyType;
-	KeyType key;
+	const KeyType key;
 	KV_Pair value;
 	nodeBase* left;
 	nodeBase* right;
 	nodeBase* parent;
 
-	nodeBase() { }
+	nodeBase() : key() { }
 	nodeBase(KV_Pair kvPair, nodeBase* parent = NULL)
 		: key(kvPair.first), value(kvPair), left(NULL), right(NULL), parent(parent) { }
 
@@ -78,7 +78,7 @@ struct nodeBase {
 	}
 
 	nodeBase* max(nodeBase* cur) {
-		while (cur->right)
+		while (cur && cur->right)
 			cur = cur->right;
 		return cur;
 	}
@@ -89,9 +89,10 @@ struct nodeBase {
 template <typename KeyType, typename ValueType>
 class BinarySearchTree {
 	private:
-		typedef nodeBase<ft::pair<KeyType,ValueType>> node;
+		typedef nodeBase<ft::pair<const KeyType,ValueType> > node;
 		node* _end;
 		node* _root;
+		size_t _size;
 
 		node* _insert(node* cur, KeyType key, ValueType val) {
 			if (cur->key < key)
@@ -100,6 +101,7 @@ class BinarySearchTree {
 					return _insert(cur->right, key, val);
 				else {
 					cur->right = new node(ft::make_pair(key, val), cur);
+					_size++;
 					return cur->right;
 				}
 			}
@@ -109,6 +111,7 @@ class BinarySearchTree {
 					return _insert(cur->left, key, val);
 				else {
 					cur->left = new node(ft::make_pair(key, val), cur);
+					_size++;
 					return cur->left;
 				}
 			}
@@ -125,12 +128,6 @@ class BinarySearchTree {
 			return cur;
 		}
 
-		node* _find_min(node* cur) {
-			while (cur->left)
-				cur = cur->left;
-			return cur;
-		}
-		
 		node* _erase(node* cur, KeyType key) {
 			if (cur == NULL)
 				return cur;
@@ -142,18 +139,37 @@ class BinarySearchTree {
 			{
 				if (cur->left == NULL) {
 					node* tmp = cur->right;
+					if (cur == _root) 
+						_root = tmp;
+					tmp->parent = cur->parent;
 					delete cur;
+					_size--;
 					return tmp;
 				}
 				if (cur->right == NULL) {
 					node* tmp = cur->left;
+					if (cur == _root)
+						_root = tmp;
+					tmp->parent = cur->parent;
 					delete cur;
+					_size--;
 					return tmp;
 				}
-				node* tmp = _find_min(cur->right);
-				cur->key = tmp->key;
-				cur->value = tmp->value;
-				cur->right = _erase(cur->right, tmp->key);
+				node* successor = _find_min(cur->right);
+				node* tmp = new node(successor->value, cur->parent);
+				tmp->left = cur->left;
+				tmp->right = cur->right;
+
+				/*******************
+				if (cur->parent->left == cur)
+					cur->parent->left = tmp;
+				else if (cur->parent->right == cur)
+					cur->parent->right = tmp;
+				******************/
+				if (cur == _root) { _root = tmp; tmp->parent = _end; }
+				delete cur;
+				tmp->right = _erase(tmp->right, tmp->key);
+				return tmp;
 			}
 			return cur;
 		}
@@ -166,10 +182,16 @@ class BinarySearchTree {
 			delete cur;
 		}
 
+		node* _find_min(node* cur) {
+			while (cur->left)
+				cur = cur->left;
+			return cur;
+		}
+
 		BinarySearchTree(const BinarySearchTree& other) { }
 		BinarySearchTree& operator=(const BinarySearchTree& rhs) { }
 	public:
-		BinarySearchTree() : _root(NULL) {
+		BinarySearchTree() : _root(NULL), _size(0) {
 			_end = new node;
 		}
 		~BinarySearchTree() {
@@ -177,31 +199,42 @@ class BinarySearchTree {
 			delete _end;
 		}
 
-		/* Return a pointer to newly inserted element.
-		 * When insertion fails ie key is already present, return NULL. */
+		/* Return a pointer to newly inserted (or existing) element. */
 		node* insert(KeyType key) { return insert(key, key); }
 		node* insert(KeyType key, ValueType val) {
-			if (_root != NULL)
-				return _insert(_root, key, val);
-			_root = new node(ft::make_pair(key, val), _end);
-			_end->right = _root;
-			return _root;
+			if (!_root) {
+				_root = new node(ft::make_pair(key, val), _end);
+				_end->right = _root;
+				_size++;
+				return _root;
+			}
+			return _insert(_root, key, val);
 		}
 
-		/* If key is not present, return NULL */
-		node* find(KeyType key) { return _find(_root, key); }
+		/* If key is not present, return tree end. */
+		node* find(KeyType key) {
+			node* tmp =_find(_root, key);
+			if (!tmp)
+				tmp = _end;
+			return tmp;
+		}
 
 		/* Always return a pointer to _root element. */
 		node* erase(KeyType key) { return _erase(_root, key); }
 
-		void prn() { prn(_root);}
-		void prn(node* cur) {
-			if (cur==NULL)
-				return;
-			prn(cur->left);
-			std::cout << (cur->value).second << ' ';
-			prn(cur->right);
+		node* min() const {
+			if (_root == NULL)
+				return _end;
+			node* cur = _root;
+			while (cur->left)
+				cur = cur->left;
+			return cur;
 		}
+
+		node* end() const { return _end; }
+
+		size_t getSize() const { return _size; }
+
 };
 
 

@@ -12,7 +12,7 @@ struct pair {
 	second_type second;
 
 	// Default Ctor
-	pair() {}
+	pair() : first(), second() {}
 
 	// Copy Ctor
 	template<typename U, typename V>

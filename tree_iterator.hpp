@@ -1,6 +1,8 @@
 #ifndef TREE_ITERATOR_HPP
 # define TREE_ITERATOR_HPP
 
+# include "utils/Binary_Search_Tree.hpp"
+
 namespace ft {
 
 
