@@ -23,6 +23,15 @@ void prn_vec(ft::vector<int> &v) {
 	std::cout << "\n\n";
 }
 
+void prn_map(ft::map<char,int> &m) {
+	ft::map<char,int>::iterator it;
+	std::cout << "size= " << m.size() << "      ";
+	for (it = m.begin(); it != m.end(); it++)
+		std::cout << it->first << ":" << it->second << "   ";
+	std::cout << "\n";
+
+}
+
 
 int main() {
 #ifdef STD
@@ -292,29 +301,78 @@ int main() {
 	m['b'] = 42;
 	std::cout << "\nchange value of 'b' by idx : " << m.find('b')->second << "\n";
 
-	std::cout << "size= " << m.size() << "   ";
-	for (it_m = m.begin(); it_m != m.end(); it_m++)
-		std::cout << (*it_m).first << ":" << (*it_m).second << "   ";
 
+	prn_map(m);
+
+	std::cout << "\n erase 'c'\n";
 	m.erase('c');
-	std::cout << "\n\nerase 'c'\n";
-	std::cout << "size= " << m.size() << "   ";
-	for (it_m = m.begin(); it_m != m.end(); it_m++)
-		std::cout << (*it_m).first << ":" << (*it_m).second << "   ";
+	prn_map(m);
 
+	std::cout << "\n erase 'a'\n";
 	m.erase('a');
-	std::cout << "\n\nerase 'a'\n";
-	std::cout << "size= " << m.size() << "   ";
-	for (it_m = m.begin(); it_m != m.end(); it_m++)
-		std::cout << (*it_m).first << ":" << (*it_m).second << "   ";
+	prn_map(m);
 
+	std::cout << "\n erase 'b'\n";
 	m.erase('b');
-	std::cout << "\n\nerase 'b'\n";
-	std::cout << "size= " << m.size() << "   ";
-	for (it_m = m.begin(); it_m != m.end(); it_m++)
-		std::cout << (*it_m).first << ":" << (*it_m).second << "   ";
+	prn_map(m);
 
-	std::cout << "\n  \n";
+	std::cout << "\n add 'c' by idx\n";
+	m['c'] = 42;
+	prn_map(m);
+
+
+	std::cout << "\n insert by range\n";
+	ft::pair<char,int> arr[] = {
+		ft::pair<char,int>('a', 9),
+		ft::pair<char,int>('b', 8),
+		ft::pair<char,int>('c', 7),
+		ft::pair<char,int>('x', 6),
+		ft::pair<char,int>('y', 5),
+		ft::pair<char,int>('z', 4) };
+	m.insert(arr, arr+6);
+	prn_map(m);
+
+	std::cout << "\n return value of single element\n";
+	ft::pair<ft::map<char,int>::iterator, bool> ret;
+	ret = m.insert( ft::pair<char,int>('z', 500));
+	if (ret.second == false) {
+		std::cout << "'z' already existed with a value of " << ret.first->second << "\n";
+	}
+	prn_map(m);
+
+	std::cout << "\n erase by iterator\n";
+	it_m = m.find('z');
+	m.erase(it_m);
+	prn_map(m);
+
+	std::cout << "\n erase by range\n";
+	it_m = m.find('x');
+	m.erase(it_m, m.end());
+	prn_map(m);
+
+	{
+		std::cout << "\n swap\n";
+		ft::map<char,int> foo,bar;
+		foo['x']=100;
+		foo['y']=200;
+
+		bar['a']=11;
+		bar['b']=22;
+		bar['c']=33;
+
+		foo.swap(bar);
+
+		std::cout << "foo contains:\n";
+		for (ft::map<char,int>::iterator it=foo.begin(); it!=foo.end(); ++it)
+			std::cout << it->first << " => " << it->second << '\n';
+
+		std::cout << "bar contains:\n";
+		for (ft::map<char,int>::iterator it=bar.begin(); it!=bar.end(); ++it)
+			std::cout << it->first << " => " << it->second << '\n';
+
+	}
+
+
 
 
 }

@@ -14,11 +14,8 @@ class tree_iterator {
 		typedef T&									reference;
 		typedef ptrdiff_t							difference_type;
 		typedef std::bidirectional_iterator_tag		iterator_category;
-	
-	private:
 		nodeBase<T>* _node;
 	
-	public:
 		tree_iterator() : _node(NULL) {}
 		tree_iterator(nodeBase<T>* node) : _node(node) {}
 		~tree_iterator() {}

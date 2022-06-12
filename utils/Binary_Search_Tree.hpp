@@ -32,7 +32,7 @@ struct nodeBase {
 	nodeBase* right;
 	nodeBase* parent;
 
-	nodeBase() : key() { }
+	nodeBase() : key(), left(NULL), right(NULL), parent(NULL) { }
 	nodeBase(KV_Pair kvPair, nodeBase* parent = NULL)
 		: key(kvPair.first), value(kvPair), left(NULL), right(NULL), parent(parent) { }
 
@@ -95,83 +95,92 @@ class BinarySearchTree {
 		size_t _size;
 
 		node* _insert(node* cur, KeyType key, ValueType val) {
-			if (cur->key < key)
-			{
-				if (cur->right)
-					return _insert(cur->right, key, val);
-				else {
-					cur->right = new node(ft::make_pair(key, val), cur);
-					_size++;
-					return cur->right;
+			while (1) {
+				if (key < cur->key) {
+					if (cur->left == NULL) {
+						cur->left = new node(ft::make_pair(key, val), cur);
+						_size++;
+						return cur->left;
+					}
+					else
+						cur = cur->left;
 				}
-			}
-			else if (cur->key > key)
-			{
-				if (cur->left)
-					return _insert(cur->left, key, val);
-				else {
-					cur->left = new node(ft::make_pair(key, val), cur);
-					_size++;
-					return cur->left;
+				else if (key > cur->key) {
+					if ( cur->right == NULL) {
+						cur->right = new node(ft::make_pair(key, val), cur);
+						_size++;
+						return cur->right;
+					}
+					else
+						cur = cur->right;
 				}
+				else
+					return cur;
 			}
-			return cur;
 		}
 
 		node* _find(node* cur, KeyType key) {
-			if (cur == NULL)
-				return NULL;
-			if (cur->key < key)
-				return _find(cur->right, key);
-			else if (cur->key > key)
-				return _find(cur->left, key);
+			while (cur != NULL) {
+				if (cur->key < key)
+					cur = cur->right;
+				else if (cur->key > key)
+					cur = cur->left;
+				else
+					return cur;
+			}
 			return cur;
 		}
 
-		node* _erase(node* cur, KeyType key) {
-			if (cur == NULL)
-				return cur;
-			if (cur->key > key)
-				cur->left = _erase(cur->left, key);
-			else if (cur->key < key)
-				cur->right = _erase(cur->right, key);
+		/* del의 부모와 child를 서로 연결.
+		 * del 이 root node라면 child를 새로운 root로 지정
+		*/
+		void _link_parent_child(node* del, node* child) {
+			if (del == _root)
+				_end->right = _root = child;
 			else
 			{
-				if (cur->left == NULL) {
-					node* tmp = cur->right;
-					if (cur == _root) 
-						_root = tmp;
-					tmp->parent = cur->parent;
-					delete cur;
-					_size--;
-					return tmp;
-				}
-				if (cur->right == NULL) {
-					node* tmp = cur->left;
-					if (cur == _root)
-						_root = tmp;
-					tmp->parent = cur->parent;
-					delete cur;
-					_size--;
-					return tmp;
-				}
-				node* successor = _find_min(cur->right);
-				node* tmp = new node(successor->value, cur->parent);
-				tmp->left = cur->left;
-				tmp->right = cur->right;
-
-				/*******************
-				if (cur->parent->left == cur)
-					cur->parent->left = tmp;
-				else if (cur->parent->right == cur)
-					cur->parent->right = tmp;
-				******************/
-				if (cur == _root) { _root = tmp; tmp->parent = _end; }
-				delete cur;
-				tmp->right = _erase(tmp->right, tmp->key);
-				return tmp;
+				if (del == del->parent->left)
+					del->parent->left = child;
+				else
+					del->parent->right = child;
 			}
-			return cur;
+			if (child != NULL)
+				child -> parent = del->parent;
+		}
+
+		/* cur를 기점으로 key를 탐색, 해당 노드를 삭제 */
+		void _erase(node* cur, KeyType key) {
+			node* del = _find(cur, key);
+			if (!del)	// 삭제할 노드가 존재하지 않음
+				return;
+
+			if (del->left == NULL && del->right == NULL) {
+				// 삭제할 노드가 leaf node라면
+				_link_parent_child(del, NULL);
+			}
+			else if (del->left && del->right) {
+				// 삭제할 노드가 2개라면
+				node* successor = _find_min(del->right);	// 오른쪽 서브트리에서 최소값 찾기
+
+				// successor는 left child가 없다. right child와 successor-parent 를 연결
+				_link_parent_child(successor, successor->right);
+
+				// successor를 del 자리로 옮김
+				successor->left = del->left;
+				successor->right = del->right;
+				successor->parent = del->parent;
+				del->left->parent = successor;
+				del->right->parent = successor;
+				_link_parent_child(del, successor);
+			}
+			else {
+				// 삭제할 노드의 자식이 왼쪽, 오른쪽 중 하나만 있다면
+				node* child = (del->left) ? del->left : del->right;
+				_link_parent_child(del, child);
+			}
+
+			delete del;
+			_size--;
 		}
 
 		void _deleteTree(node* cur) {
@@ -180,6 +189,7 @@ class BinarySearchTree {
 			_deleteTree(cur->left);
 			_deleteTree(cur->right);
 			delete cur;
+			_size--;
 		}
 
 		node* _find_min(node* cur) {
@@ -200,7 +210,6 @@ class BinarySearchTree {
 		}
 
 		/* Return a pointer to newly inserted (or existing) element. */
-		node* insert(KeyType key) { return insert(key, key); }
 		node* insert(KeyType key, ValueType val) {
 			if (!_root) {
 				_root = new node(ft::make_pair(key, val), _end);
@@ -210,17 +219,22 @@ class BinarySearchTree {
 			}
 			return _insert(_root, key, val);
 		}
+		node* insert(node* hint, KeyType key, ValueType val) { return _insert(hint, key, val); }
 
 		/* If key is not present, return tree end. */
 		node* find(KeyType key) {
 			node* tmp =_find(_root, key);
-			if (!tmp)
-				tmp = _end;
-			return tmp;
+			if (tmp)
+				return tmp;
+			return _end;
 		}
 
-		/* Always return a pointer to _root element. */
-		node* erase(KeyType key) { return _erase(_root, key); }
+		void erase(KeyType key) {
+			_erase(_root, key);
+		}
+		void erase(node* pos) {
+			_erase(pos, pos->key);
+		}
 
 		node* min() const {
 			if (_root == NULL)
@@ -231,9 +245,17 @@ class BinarySearchTree {
 			return cur;
 		}
 
-		node* end() const { return _end; }
+		node*	end() const { return _end; }
 
-		size_t getSize() const { return _size; }
+		size_t	getSize() const { return _size; }
+
+		void	clear() { _deleteTree(_root); }
+
+		void	swap(BinarySearchTree& x) {
+			std::swap(_end, x._end);
+			std::swap(_root, x._root);
+			std::swap(_size, x._size);
+		}
 
 };
 
