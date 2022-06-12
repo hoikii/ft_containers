@@ -212,7 +212,7 @@ class BinarySearchTree {
 
 		BinarySearchTree() { }
 		BinarySearchTree(const BinarySearchTree& other) { }
-		BinarySearchTree& operator=(const BinarySearchTree& rhs) { }
+		BinarySearchTree& operator=(const BinarySearchTree& rhs);
 	public:
 		BinarySearchTree(Compare comp, Alloc alloc) : _root(NULL), _size(0), _comp(comp), _alloc(NodeAlloc(alloc)) {
 			//_end = new node;

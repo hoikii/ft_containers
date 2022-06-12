@@ -29,6 +29,11 @@ class reverse_iterator {
 			_base_iterator = rev_it._base_iterator;
 		}
 
+		reverse_iterator operator=(const reverse_iterator& rhs) {
+			_base_iterator = rhs._base_iterator;
+			return *this;
+		}
+
 		~reverse_iterator() {}
 
 		iterator_type		base() const { return _base_iterator; }
