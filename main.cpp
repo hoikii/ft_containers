@@ -7,6 +7,7 @@
 	#include <iterator>
 	#include <type_traits>
 	#include <map>
+	#include <stack>
 	namespace ft = std;
 #else
 	#include "vector.hpp"
@@ -14,6 +15,7 @@
 	#include "utils/is_integral.hpp"
 	#include "utils/pair.hpp"
 	#include "map.hpp"
+	#include "stack.hpp"
 #endif
 
 void prn_vec(ft::vector<int> &v) {
@@ -373,6 +375,21 @@ int main() {
 	}
 
 
+	std::cout << "\n ===== stack =====\n";
+	ft::stack<int> s;
 
+	std::cout << "size=" << s.size() << "      is_empty=" << s.empty() << "\n";
+	s.push(1);
+	s.push(2);
+	s.push(3);
+	s.push(4);
+	s.push(5);
 
+	std::cout << "size=" << s.size() << "      is_empty=" << s.empty() << "\n";
+	while (s.size()) {
+		std::cout << s.top() << "\n";
+		s.pop();
+	}
+
+	std::cout << "size=" << s.size() << "      is_empty=" << s.empty() << "\n";
 }

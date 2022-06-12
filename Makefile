@@ -9,7 +9,8 @@ HEADERS		= vector.hpp random_access_iterator.hpp \
 			utils/pair.hpp \
 			utils/lexicographical_compare.hpp \
 			utils/Binary_Search_Tree.hpp \
-			map.hpp tree_iterator.hpp
+			map.hpp tree_iterator.hpp \
+			stack.hpp
 OBJS_A		= $(SRCS:.cpp=.ft_o)
 OBJS_B		= $(SRCS:.cpp=.std_o)
 OBJS		= $(OBJS_A) $(OBJS_B)
