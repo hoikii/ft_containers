@@ -86,28 +86,36 @@ struct nodeBase {
 
 };
 
-template <typename KeyType, typename ValueType>
+template <typename KeyType, typename ValueType, typename Compare, typename Alloc>
 class BinarySearchTree {
 	private:
-		typedef nodeBase<ft::pair<const KeyType,ValueType> > node;
-		node* _end;
-		node* _root;
-		size_t _size;
+		typedef nodeBase<ft::pair<const KeyType,ValueType> >	node;
+		node*	_end;
+		node*	_root;
+		size_t	_size;
+
+		typedef typename Alloc::rebind<node>::other			NodeAlloc;
+		Compare		_comp;
+		NodeAlloc	_alloc;
 
 		node* _insert(node* cur, KeyType key, ValueType val) {
 			while (1) {
-				if (key < cur->key) {
+				if (_comp(key, cur->key)) {			// 추가하려는 key가 현재 node의 key보다 작다면
 					if (cur->left == NULL) {
-						cur->left = new node(ft::make_pair(key, val), cur);
+						//cur->left = new node(ft::make_pair(key, val), cur);
+						cur->left = _alloc.allocate(1);
+						_alloc.construct(cur->left, node(ft::make_pair(key,val), cur));
 						_size++;
 						return cur->left;
 					}
 					else
 						cur = cur->left;
 				}
-				else if (key > cur->key) {
+				else if (_comp(cur->key, key)) {	// 추가하려는 key가 현재 node의 key보다 크다면
 					if ( cur->right == NULL) {
-						cur->right = new node(ft::make_pair(key, val), cur);
+						//cur->right = new node(ft::make_pair(key, val), cur);
+						cur->right = _alloc.allocate(1);
+						_alloc.construct(cur->right, node(ft::make_pair(key, val), cur));
 						_size++;
 						return cur->right;
 					}
@@ -121,10 +129,10 @@ class BinarySearchTree {
 
 		node* _find(node* cur, KeyType key) {
 			while (cur != NULL) {
-				if (cur->key < key)
-					cur = cur->right;
-				else if (cur->key > key)
+				if (_comp(key, cur->key))		// 찾으려는 key가 현재 node의 key보다 작다면
 					cur = cur->left;
+				else if (_comp(cur->key, key))	// 찾으려는 key가 현재 node의 key 보다 크다면
+					cur = cur->right;
 				else
 					return cur;
 			}
@@ -179,7 +187,9 @@ class BinarySearchTree {
 				_link_parent_child(del, child);
 			}
 
-			delete del;
+			//delete del;
+			_alloc.destroy(del);
+			_alloc.deallocate(del, 1);
 			_size--;
 		}
 
@@ -188,7 +198,9 @@ class BinarySearchTree {
 				return;
 			_deleteTree(cur->left);
 			_deleteTree(cur->right);
-			delete cur;
+			//delete cur;
+			_alloc.destroy(cur);
+			_alloc.deallocate(cur, 1);
 			_size--;
 		}
 
@@ -198,21 +210,28 @@ class BinarySearchTree {
 			return cur;
 		}
 
+		BinarySearchTree() { }
 		BinarySearchTree(const BinarySearchTree& other) { }
 		BinarySearchTree& operator=(const BinarySearchTree& rhs) { }
 	public:
-		BinarySearchTree() : _root(NULL), _size(0) {
-			_end = new node;
+		BinarySearchTree(Compare comp, Alloc alloc) : _root(NULL), _size(0), _comp(comp), _alloc(NodeAlloc(alloc)) {
+			//_end = new node;
+			_end = _alloc.allocate(1);
+			_alloc.construct(_end, node());
 		}
 		~BinarySearchTree() {
 			_deleteTree(_root);
-			delete _end;
+			//delete _end;
+			_alloc.destroy(_end);
+			_alloc.deallocate(_end, 1);
 		}
 
 		/* Return a pointer to newly inserted (or existing) element. */
 		node* insert(KeyType key, ValueType val) {
 			if (!_root) {
-				_root = new node(ft::make_pair(key, val), _end);
+				//_root = new node(ft::make_pair(key, val), _end);
+				_root = _alloc.allocate(1);
+				_alloc.construct(_root, node(ft::make_pair(key, val), _end));
 				_end->right = _root;
 				_size++;
 				return _root;
@@ -255,6 +274,8 @@ class BinarySearchTree {
 			std::swap(_end, x._end);
 			std::swap(_root, x._root);
 			std::swap(_size, x._size);
+			std::swap(_comp, x._comp);
+			std::swap(_alloc, x._alloc);
 		}
 
 };

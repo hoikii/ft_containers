@@ -39,26 +39,25 @@ class map {
 		typedef size_t									size_type;
 
 	private:
-		// TODO: Use Compare, Alloc in our tree
-		BinarySearchTree<Key,T> _bst;
+		BinarySearchTree<Key,T, Compare, Alloc> _bst;
 		key_compare _comp;
 		allocator_type _alloc;
 
 	public:
 		// default Ctor
 		map(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
-			: _bst(), _comp(comp), _alloc(alloc) { }
+			: _bst(comp, alloc), _comp(comp), _alloc(alloc) { }
 
 		// range Ctor
 		template<typename InputIterator>
 		map(InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
-			: _bst(), _comp(comp), _alloc(alloc) {
+			: _bst(comp, alloc), _comp(comp), _alloc(alloc) {
 				while (first != last)
 					insert(first++);
 		}
 
 		// copy Ctor
-		map(const map& other) : _bst(), _comp(other.comp), _alloc(other.alloc) {
+		map(const map& other) : _bst(other.comp, other.alloc), _comp(other.comp), _alloc(other.alloc) {
 			insert(other.begin(), other.end());
 		 }
 
