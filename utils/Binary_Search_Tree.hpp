@@ -23,18 +23,16 @@
 
 namespace ft {
 
-template <typename KV_Pair>
+template <typename ValueType>
 struct nodeBase {
-	typedef typename KV_Pair::first_type KeyType;
-	const KeyType key;
-	KV_Pair value;
+	ValueType value;
 	nodeBase* left;
 	nodeBase* right;
 	nodeBase* parent;
 
-	nodeBase() : key(), left(NULL), right(NULL), parent(NULL) { }
-	nodeBase(const KV_Pair kvPair, nodeBase* parent = NULL)
-		: key(kvPair.first), value(kvPair), left(NULL), right(NULL), parent(parent) { }
+	nodeBase() : value(), left(NULL), right(NULL), parent(NULL) { }
+	nodeBase(const ValueType value, nodeBase* parent = NULL)
+		: value(value), left(NULL), right(NULL), parent(parent) { }
 
 	nodeBase* next() {
 		if (this->parent == NULL)
@@ -86,10 +84,10 @@ struct nodeBase {
 
 };
 
-template <typename KeyType, typename ValueType, typename Compare, typename Alloc>
+template <typename ValueType, typename Compare, typename Alloc>
 class BinarySearchTree {
 	private:
-		typedef nodeBase<ft::pair<const KeyType,ValueType> >	node;
+		typedef nodeBase<ValueType>		node;
 		node*	_end;
 		node*	_root;
 		size_t	_size;
@@ -98,24 +96,24 @@ class BinarySearchTree {
 		Compare		_comp;
 		NodeAlloc	_alloc;
 
-		node* _insert(node* cur, KeyType key, ValueType val) {
+		node* _insert(node* cur, ValueType value) {
 			while (1) {
-				if (_comp(key, cur->key)) {			// 추가하려는 key가 현재 node의 key보다 작다면
+				if (_comp(value, cur->value)) {			// 추가하려는 key가 현재 node의 key보다 작다면
 					if (cur->left == NULL) {
-						//cur->left = new node(ft::make_pair(key, val), cur);
+						//cur->left = new node(value, cur);
 						cur->left = _alloc.allocate(1);
-						_alloc.construct(cur->left, node(ft::make_pair(key,val), cur));
+						_alloc.construct(cur->left, node(value, cur));
 						_size++;
 						return cur->left;
 					}
 					else
 						cur = cur->left;
 				}
-				else if (_comp(cur->key, key)) {	// 추가하려는 key가 현재 node의 key보다 크다면
+				else if (_comp(cur->value, value)) {	// 추가하려는 key가 현재 node의 key보다 크다면
 					if ( cur->right == NULL) {
-						//cur->right = new node(ft::make_pair(key, val), cur);
+						//cur->right = new node(value, cur);
 						cur->right = _alloc.allocate(1);
-						_alloc.construct(cur->right, node(ft::make_pair(key, val), cur));
+						_alloc.construct(cur->right, node(value, cur));
 						_size++;
 						return cur->right;
 					}
@@ -127,11 +125,11 @@ class BinarySearchTree {
 			}
 		}
 
-		node* _find(node* cur, KeyType key) {
+		node* _find(node* cur, ValueType value) {
 			while (cur != NULL) {
-				if (_comp(key, cur->key))		// 찾으려는 key가 현재 node의 key보다 작다면
+				if (_comp(value, cur->value))		// 찾으려는 key가 현재 node의 key보다 작다면
 					cur = cur->left;
-				else if (_comp(cur->key, key))	// 찾으려는 key가 현재 node의 key 보다 크다면
+				else if (_comp(cur->value, value))	// 찾으려는 key가 현재 node의 key 보다 크다면
 					cur = cur->right;
 				else
 					return cur;
@@ -157,8 +155,8 @@ class BinarySearchTree {
 		}
 
 		/* cur를 기점으로 key를 탐색, 해당 노드를 삭제 */
-		void _erase(node* cur, KeyType key) {
-			node* del = _find(cur, key);
+		void _erase(node* cur, ValueType value) {
+			node* del = _find(cur, value);
 			if (!del)	// 삭제할 노드가 존재하지 않음
 				return;
 
@@ -229,12 +227,14 @@ class BinarySearchTree {
 			_end = _alloc.allocate(1);
 			_alloc.construct(_end, node());
 		}
+
 		~BinarySearchTree() {
 			_deleteTree(_root);
 			//delete _end;
 			_alloc.destroy(_end);
 			_alloc.deallocate(_end, 1);
 		}
+
 		BinarySearchTree(const BinarySearchTree& other)
 			: _root(NULL), _size(other._size), _comp(other._comp), _alloc(other._alloc)
 		{
@@ -244,32 +244,32 @@ class BinarySearchTree {
 		}
 
 		/* Return a pointer to newly inserted (or existing) element. */
-		node* insert(KeyType key, ValueType val) {
+		node* insert(ValueType value) {
 			if (!_root) {
-				//_root = new node(ft::make_pair(key, val), _end);
+				//_root = new node(value, _end);
 				_root = _alloc.allocate(1);
-				_alloc.construct(_root, node(ft::make_pair(key, val), _end));
+				_alloc.construct(_root, node(value, _end));
 				_end->right = _root;
 				_size++;
 				return _root;
 			}
-			return _insert(_root, key, val);
+			return _insert(_root, value);
 		}
-		node* insert(node* hint, KeyType key, ValueType val) { return _insert(hint, key, val); }
+		node* insert(node* hint, ValueType value) { return _insert(hint, value); }
 
 		/* If key is not present, return tree end. */
-		node* find(KeyType key) {
-			node* tmp =_find(_root, key);
+		node* find(ValueType value) {
+			node* tmp =_find(_root, value);
 			if (tmp)
 				return tmp;
 			return _end;
 		}
 
-		void erase(KeyType key) {
-			_erase(_root, key);
+		void erase(ValueType value) {
+			_erase(_root, value);
 		}
 		void erase(node* pos) {
-			_erase(pos, pos->key);
+			_erase(pos, pos->value);
 		}
 
 		node* min() const {

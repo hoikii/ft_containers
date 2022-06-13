@@ -32,6 +32,8 @@ class map {
 		typedef Alloc									allocator_type;
 		typedef typename Alloc::reference				reference;
 		typedef typename Alloc::const_reference			const_reference;
+		typedef typename Alloc::pointer					pointer;
+		typedef typename Alloc::const_pointer			const_pointer;
 		typedef tree_iterator<value_type>				iterator;
 		typedef tree_const_iterator<value_type>			const_iterator;
 		typedef ft::reverse_iterator<iterator>			reverse_iterator;
@@ -40,19 +42,19 @@ class map {
 		typedef size_t									size_type;
 
 	private:
-		BinarySearchTree<Key,T, Compare, Alloc> _bst;
+		BinarySearchTree<value_type, value_compare, Alloc> _bst;
 		key_compare _comp;
 		allocator_type _alloc;
 
 	public:
 		// default Ctor
 		map(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
-			: _bst(comp, alloc), _comp(comp), _alloc(alloc) { }
+			: _bst(value_compare(comp), alloc), _comp(comp), _alloc(alloc) { }
 
 		// range Ctor
 		template<typename InputIterator>
 		map(InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
-			: _bst(comp, alloc), _comp(comp), _alloc(alloc) {
+			: _bst(value_compare(comp), alloc), _comp(comp), _alloc(alloc) {
 				while (first != last)
 					insert(first++);
 		}
@@ -85,15 +87,14 @@ class map {
 		mapped_type& operator[](const key_type& k) {
 			iterator tmp = _bst.find(k);
 			if (tmp == end())
-				tmp = insert(ft::make_pair(k, mapped_type())).first;
+				tmp = insert(k).first;
 			return (*tmp).second;
-
 		}
 
 		// insert single element
 		ft::pair<iterator,bool>	insert(const value_type& val) {
 			size_type before = _bst.getSize();
-			iterator pos = _bst.insert(val.first, val.second);
+			iterator pos = _bst.insert(val);
 			size_type after = _bst.getSize();
 			return ft::make_pair<iterator, bool>(pos, before!=after);
 		}
@@ -101,10 +102,10 @@ class map {
 		// insert with hint
 		iterator				insert(iterator position, const value_type& val) {
 			// if (position->second < val) // if hint is valid
-			if ( _comp(position->second, val) )
-				return _bst.insert(position._node, val.first, val.second);
+			if ( _comp(position, val) )
+				return _bst.insert(position._node, val);
 			else
-				return _bst.insert(val.first, val.second);
+				return _bst.insert(val);
 		}
 
 		// insert range
@@ -142,8 +143,8 @@ class map {
 			_bst.clear();
 		}
 
-		key_compare		key_comp() const	{ return key_compare(); }
-		value_compare	value_com() const	{ return value_compare(key_compare()); }
+		key_compare		key_comp() const	{ return _comp; }
+		value_compare	value_comp() const	{ return value_compare(_comp); }
 
 
 		iterator 		find(const key_type& k)			{ return iterator(_bst.find(k)); }
