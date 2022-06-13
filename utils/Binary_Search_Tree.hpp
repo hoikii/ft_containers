@@ -33,7 +33,7 @@ struct nodeBase {
 	nodeBase* parent;
 
 	nodeBase() : key(), left(NULL), right(NULL), parent(NULL) { }
-	nodeBase(KV_Pair kvPair, nodeBase* parent = NULL)
+	nodeBase(const KV_Pair kvPair, nodeBase* parent = NULL)
 		: key(kvPair.first), value(kvPair), left(NULL), right(NULL), parent(parent) { }
 
 	nodeBase* next() {

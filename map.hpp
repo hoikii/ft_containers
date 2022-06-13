@@ -4,6 +4,7 @@
 # include <functional> // less
 # include <memory> // allocator
 # include <limits> // numeric_limits, max
+# include <cstddef> // ptrdiff_t
 # include "utils/pair.hpp"
 # include "tree_iterator.hpp"
 # include "utils/reverse_iterator.hpp"
@@ -32,7 +33,7 @@ class map {
 		typedef typename Alloc::reference				reference;
 		typedef typename Alloc::const_reference			const_reference;
 		typedef tree_iterator<value_type>				iterator;
-		typedef tree_iterator<const value_type>			const_iterator;
+		typedef tree_const_iterator<value_type>			const_iterator;
 		typedef ft::reverse_iterator<iterator>			reverse_iterator;
 		typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 		typedef ptrdiff_t								difference_type;
@@ -57,7 +58,7 @@ class map {
 		}
 
 		// copy Ctor
-		map(const map& other) : _bst(other.comp, other.alloc), _comp(other.comp), _alloc(other.alloc) {
+		map(const map& other) : _bst(other._comp, other._alloc), _comp(other._comp), _alloc(other._alloc) {
 			insert(other.begin(), other.end());
 		 }
 
