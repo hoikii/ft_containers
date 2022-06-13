@@ -1,7 +1,7 @@
 #ifndef BINARY_SEARCH_TREE_HPP
 # define BINARY_SEARCH_TREE_HPP
 
-# include "pair.hpp"
+# include "tree_interface.hpp"
 
 /*       end
           |
@@ -23,80 +23,28 @@
 
 namespace ft {
 
-template <typename ValueType>
-struct nodeBase {
-	ValueType value;
-	nodeBase* left;
-	nodeBase* right;
-	nodeBase* parent;
-
-	nodeBase() : value(), left(NULL), right(NULL), parent(NULL) { }
-	nodeBase(const ValueType value, nodeBase* parent = NULL)
-		: value(value), left(NULL), right(NULL), parent(parent) { }
-
-	nodeBase* next() {
-		if (this->parent == NULL)
-			return max(this->right);
-		nodeBase* next;
-		if (this->right)
-		{
-			next = this->right;
-			while (next->left)
-				next = next->left;
-		}
-		else
-		{
-			next = this;
-			while (next->parent && next->parent->right == next)
-				next = next->parent;
-			if (next->parent)
-				next = next->parent;
-		}
-		return next;
-	}
-
-	nodeBase* prev() {
-		if (this->parent == NULL)
-			return max(this->right);
-		nodeBase* prev;
-		if (this->left)
-		{
-			prev = this->left;
-			while (prev->right)
-				prev = prev->right;
-		}
-		else
-		{
-			prev = this;
-			while (prev->parent && prev->parent->left == prev)
-				prev = prev->parent;
-			prev =prev->parent;
-		}
-		return prev;
-	}
-
-	nodeBase* max(nodeBase* cur) {
-		while (cur && cur->right)
-			cur = cur->right;
-		return cur;
-	}
-
-
-};
 
 template <typename ValueType, typename Compare, typename Alloc>
-class BinarySearchTree {
-	private:
+class BinarySearchTree : public TreeInterface<ValueType, Compare, Alloc> {
+	public:
+		using TreeInterface<ValueType,Compare,Alloc>::_comp;
+		using TreeInterface<ValueType,Compare,Alloc>::_alloc;
+		using TreeInterface<ValueType,Compare,Alloc>::_end;
+		using TreeInterface<ValueType,Compare,Alloc>::_root;
+		using TreeInterface<ValueType,Compare,Alloc>::_size;
 		typedef nodeBase<ValueType>		node;
-		node*	_end;
-		node*	_root;
-		size_t	_size;
 
-		typedef typename Alloc::rebind<node>::other			NodeAlloc;
-		Compare		_comp;
-		NodeAlloc	_alloc;
+		BinarySearchTree(Compare comp, Alloc alloc) : TreeInterface<ValueType,Compare,Alloc>(comp, alloc) { }
 
-		node* _insert(node* cur, ValueType value) {
+		BinarySearchTree(const BinarySearchTree& other) : TreeInterface<ValueType,Compare,Alloc>(other) { }
+
+		virtual ~BinarySearchTree() { }
+
+	private:
+		BinarySearchTree() { }
+		BinarySearchTree& operator=(const BinarySearchTree& rhs);
+
+		virtual node* _insert(node* cur, ValueType value) {
 			while (1) {
 				if (_comp(value, cur->value)) {			// 추가하려는 key가 현재 node의 key보다 작다면
 					if (cur->left == NULL) {
@@ -125,7 +73,7 @@ class BinarySearchTree {
 			}
 		}
 
-		node* _find(node* cur, ValueType value) {
+		virtual node* _find(node* cur, ValueType value) {
 			while (cur != NULL) {
 				if (_comp(value, cur->value))		// 찾으려는 key가 현재 node의 key보다 작다면
 					cur = cur->left;
@@ -155,7 +103,7 @@ class BinarySearchTree {
 		}
 
 		/* cur를 기점으로 key를 탐색, 해당 노드를 삭제 */
-		void _erase(node* cur, ValueType value) {
+		virtual void _erase(node* cur, ValueType value) {
 			node* del = _find(cur, value);
 			if (!del)	// 삭제할 노드가 존재하지 않음
 				return;
@@ -191,111 +139,16 @@ class BinarySearchTree {
 			_size--;
 		}
 
-		void _deleteTree(node* cur) {
-			if (cur == NULL)
-				return;
-			_deleteTree(cur->left);
-			_deleteTree(cur->right);
-			//delete cur;
-			_alloc.destroy(cur);
-			_alloc.deallocate(cur, 1);
-			_size--;
-		}
-
 		node* _find_min(node* cur) {
 			while (cur->left)
 				cur = cur->left;
 			return cur;
 		}
 
-		node* _copy_recurse(node* src, node* dst_parent) {
-			if (!src)
-				return NULL;
-			//node* dst = new node(src->value, dst_parent);
-			node* dst = _alloc.allocate(1);
-			_alloc.construct(dst, node(src->value, dst_parent));
-			dst->left = _copy_recurse(src->left, dst);
-			dst->right = _copy_recurse(src->right, dst);
-			return dst;
-		}
-
-		BinarySearchTree() { }
-		BinarySearchTree& operator=(const BinarySearchTree& rhs);
-	public:
-		BinarySearchTree(Compare comp, Alloc alloc) : _root(NULL), _size(0), _comp(comp), _alloc(NodeAlloc(alloc)) {
-			//_end = new node;
-			_end = _alloc.allocate(1);
-			_alloc.construct(_end, node());
-		}
-
-		~BinarySearchTree() {
-			_deleteTree(_root);
-			//delete _end;
-			_alloc.destroy(_end);
-			_alloc.deallocate(_end, 1);
-		}
-
-		BinarySearchTree(const BinarySearchTree& other)
-			: _root(NULL), _size(other._size), _comp(other._comp), _alloc(other._alloc)
-		{
-			_end = _alloc.allocate(1);
-			_alloc.construct(_end, node());
-			_root = _copy_recurse(other._root, _end);
-		}
-
-		/* Return a pointer to newly inserted (or existing) element. */
-		node* insert(ValueType value) {
-			if (!_root) {
-				//_root = new node(value, _end);
-				_root = _alloc.allocate(1);
-				_alloc.construct(_root, node(value, _end));
-				_end->right = _root;
-				_size++;
-				return _root;
-			}
-			return _insert(_root, value);
-		}
-		node* insert(node* hint, ValueType value) { return _insert(hint, value); }
-
-		/* If key is not present, return tree end. */
-		node* find(ValueType value) {
-			node* tmp =_find(_root, value);
-			if (tmp)
-				return tmp;
-			return _end;
-		}
-
-		void erase(ValueType value) {
-			_erase(_root, value);
-		}
-		void erase(node* pos) {
-			_erase(pos, pos->value);
-		}
-
-		node* min() const {
-			if (_root == NULL)
-				return _end;
-			node* cur = _root;
-			while (cur->left)
-				cur = cur->left;
-			return cur;
-		}
-
-		node*	end() const { return _end; }
-
-		size_t	getSize() const { return _size; }
-
-		void	clear() { _deleteTree(_root); }
-
-		void	swap(BinarySearchTree& x) {
-			std::swap(_end, x._end);
-			std::swap(_root, x._root);
-			std::swap(_size, x._size);
-			std::swap(_comp, x._comp);
-			std::swap(_alloc, x._alloc);
-		}
 
 };
+
+
 
 
 }

@@ -7,6 +7,7 @@
 # include <cstddef> // ptrdiff_t
 # include "utils/pair.hpp"
 # include "tree_iterator.hpp"
+# include "utils/Binary_Search_Tree.hpp"
 # include "utils/reverse_iterator.hpp"
 # include "utils/iterators_traits.hpp"
 
@@ -72,10 +73,15 @@ class map {
 		~map() { }
 
 		// Iterators
-		iterator		begin()			{ return iterator(_bst.min()); }
-		const_iterator	begin() const	{ return const_iterator(_bst.min()); }
+		iterator		begin()			{ return iterator(_bst.begin()); }
+		const_iterator	begin() const	{ return const_iterator(_bst.begin()); }
 		iterator		end()			{ return iterator(_bst.end()); }
 		const_iterator	end() const		{ return const_iterator(_bst.end()); }
+
+		reverse_iterator		rbegin()		{ return reverse_iterator(_bst.end()); }
+		const_reverse_iterator	rbegin() const	{ return const_reverse_iterator(_bst.end()); }
+		reverse_iterator		rend()			{ return reverse_iterator(_bst.begin()); }
+		const_reverse_iterator	rend() const	{ return const_reverse_iterator(_bst.begin()); }
 
 		// Capacity
 		bool		empty()		const { return (_bst.getSize() == 0); }
@@ -156,7 +162,7 @@ class map {
 			return 0;
 		}
 
-		iterator							lower_bound(const key_type& k) {
+		iterator		lower_bound(const key_type& k) {
 			iterator it = begin();
 			while (it != end()) {
 				if ( ! _comp(it->first, k) )	// return if   it->first >= k
@@ -166,11 +172,11 @@ class map {
 			return it;
 		}
 
-		const_iterator						lower_bound(const key_type& k) const {
+		const_iterator	lower_bound(const key_type& k) const {
 			return const_iterator(lower_bound(k));
 		}
 
-		iterator							upper_bound(const key_type& k) {
+		iterator		upper_bound(const key_type& k) {
 			iterator it = begin();
 			while (it != end()) {
 				if ( _comp(k, it->first) )		// return if   it->first > k
@@ -180,7 +186,7 @@ class map {
 			return it;
 		}
 
-		const_iterator						upper_bound(const key_type& k) const {
+		const_iterator	upper_bound(const key_type& k) const {
 			return const_iterator(upper_bound(k));
 		}
 
