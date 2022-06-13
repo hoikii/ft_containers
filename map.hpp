@@ -58,9 +58,7 @@ class map {
 		}
 
 		// copy Ctor
-		map(const map& other) : _bst(other._comp, other._alloc), _comp(other._comp), _alloc(other._alloc) {
-			insert(other.begin(), other.end());
-		 }
+		map(const map& other) : _bst(other._bst), _comp(other._comp), _alloc(other._alloc) { }
 
 		map& operator=(const map& rhs) {
 			map tmp(rhs);
