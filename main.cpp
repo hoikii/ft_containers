@@ -1,21 +1,21 @@
 #include <iostream>
 #include <typeinfo>
-#include <vector>
 #include <list>
 
 #ifdef STD
 	#include <iterator>
 	#include <type_traits>
+	#include <vector>
 	#include <map>
 	#include <stack>
+	#include <set>
 	namespace ft = std;
 #else
 	#include "vector.hpp"
-	#include "utils/reverse_iterator.hpp"
-	#include "utils/is_integral.hpp"
 	#include "utils/pair.hpp"
 	#include "map.hpp"
 	#include "stack.hpp"
+	#include "set.hpp"
 #endif
 
 void prn_vec(ft::vector<int> &v) {
@@ -376,20 +376,37 @@ int main() {
 
 
 	std::cout << "\n ===== stack =====\n";
-	ft::stack<int> s;
+	ft::stack<int> st;
 
-	std::cout << "size=" << s.size() << "      is_empty=" << s.empty() << "\n";
-	s.push(1);
-	s.push(2);
-	s.push(3);
-	s.push(4);
-	s.push(5);
+	std::cout << "size=" << st.size() << "      is_empty=" << st.empty() << "\n";
+	st.push(1);
+	st.push(2);
+	st.push(3);
+	st.push(4);
+	st.push(5);
 
-	std::cout << "size=" << s.size() << "      is_empty=" << s.empty() << "\n";
-	while (s.size()) {
-		std::cout << s.top() << "\n";
-		s.pop();
+	std::cout << "size=" << st.size() << "      is_empty=" << st.empty() << "\n";
+	while (st.size()) {
+		std::cout << st.top() << "\n";
+		st.pop();
 	}
 
-	std::cout << "size=" << s.size() << "      is_empty=" << s.empty() << "\n";
+	std::cout << "size=" << st.size() << "      is_empty=" << st.empty() << "\n";
+
+
+
+
+	std::cout << "\n ===== set =====\n";
+	ft::set<int> s;
+	s.insert(3);
+	s.insert(5);
+	s.insert(5);
+	s.insert(5);
+	s.insert(1);
+	s.insert(4);
+	s.insert(2);
+	for (ft::set<int>::iterator it = s.begin(); it != s.end(); it++)
+		std::cout << (*it) << "    ";
+	std::cout << "\n";
+
 }
