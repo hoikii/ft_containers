@@ -1,10 +1,9 @@
 #ifndef VECTOR_HPP
 # define VECTOR_HPP
 
-# include <cstddef>
-# include <memory>
-# include <limits>
-# include <algorithm>
+# include <cstddef> // ptrdiff_t
+# include <memory> // allocator
+# include <limits> // numeric_limits, max
 # include "random_access_iterator.hpp"
 # include "utils/reverse_iterator.hpp"
 # include "utils/enable_if.hpp"

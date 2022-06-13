@@ -18,24 +18,24 @@ class stack {
 		typedef size_t		size_type;
 		// Allocator 변경은 c++11부터 지원
 	
-	private:
-		container_type _ctnr;
+	protected:
+		container_type c;
 	
 	public:
-		stack(const container_type& ctnr = container_type()) : _ctnr(ctnr) { }
-		stack(const stack& other) : _ctnr(other._ctnr) { }
+		stack(const container_type& ctnr = container_type()) : c(ctnr) { }
+		stack(const stack& other) : c(other.c) { }
 		~stack() { }
 		stack& operator=(const stack& rhs) {
-			_ctnr = rhs._ctnr;
+			c = rhs.c;
 			return *this;
 		}
 		
-		bool			 	empty() const				{ return _ctnr.empty(); }
-		size_type			size() const				{ return _ctnr.size(); }
-		value_type			top()						{ return _ctnr.back(); }
-		const value_type&	top() const					{ return _ctnr.back(); }
-		void 				push(const value_type& val)	{ _ctnr.push_back(val); }
-		void				pop()						{ _ctnr.pop_back(); }
+		bool			 	empty() const				{ return c.empty(); }
+		size_type			size() const				{ return c.size(); }
+		value_type			top()						{ return c.back(); }
+		const value_type&	top() const					{ return c.back(); }
+		void 				push(const value_type& val)	{ c.push_back(val); }
+		void				pop()						{ c.pop_back(); }
 };
 
 // relational operators

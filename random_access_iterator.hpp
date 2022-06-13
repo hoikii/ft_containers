@@ -1,6 +1,7 @@
 #ifndef RANDOM_ACCESS_ITERATOR_HPP
 # define RANDOM_ACCESS_ITERATOR_HPP
 
+# include <cstddef> // ptrdiff_t
 # include "utils/iterators_traits.hpp"
 
 namespace ft {
