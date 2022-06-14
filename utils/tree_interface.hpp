@@ -70,6 +70,7 @@ class TreeInterface {
 				_alloc.construct(_root, node(value, _end));
 				_end->right = _root;
 				_size++;
+				_root->color = ft::BLACK;
 				return _root;
 			}
 			return _insert(_root, value);

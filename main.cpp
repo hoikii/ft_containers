@@ -398,13 +398,14 @@ int main() {
 
 	std::cout << "\n ===== set =====\n";
 	ft::set<int> s;
-	s.insert(3);
-	s.insert(5);
-	s.insert(5);
-	s.insert(5);
-	s.insert(1);
-	s.insert(4);
-	s.insert(2);
+	for (int i = 1; i < 100; i++)
+		s.insert(i);
+
+	s.erase(9);
+
+	for (ft::set<int>::iterator it = s.begin(); it != s.end(); it++)
+		std::cout << (*it) << "    ";
+	std::cout << "\n";
 	for (ft::set<int>::iterator it = s.begin(); it != s.end(); it++)
 		std::cout << (*it) << "    ";
 	std::cout << "\n";

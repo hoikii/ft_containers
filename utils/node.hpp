@@ -3,18 +3,24 @@
 
 namespace ft {
 
+enum RB_Color {
+	RED = 0,
+	BLACK
+};
+
 template <typename ValueType>
 struct nodeBase {
 	ValueType value;
 	nodeBase* left;
 	nodeBase* right;
 	nodeBase* parent;
+	bool color;
 
 	nodeBase() : value(), left(NULL), right(NULL), parent(NULL) { }
 	nodeBase(const ValueType value, nodeBase* parent = NULL)
-		: value(value), left(NULL), right(NULL), parent(parent) { }
+		: value(value), left(NULL), right(NULL), parent(parent), color(RED) { }
 	~nodeBase() { left = right = parent = NULL; }
-	nodeBase(const nodeBase& other) : value(other.value), left(other.left), right(other.right), parent(other.parent) { }
+	nodeBase(const nodeBase& other) : value(other.value), left(other.left), right(other.right), parent(other.parent), color(other.color) { }
 
 	nodeBase* next() {
 		if (this->parent == NULL)

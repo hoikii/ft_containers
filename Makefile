@@ -13,7 +13,8 @@ HEADERS		= vector.hpp random_access_iterator.hpp \
 			utils/Binary_Search_Tree.hpp \
 			map.hpp tree_iterator.hpp \
 			stack.hpp \
-			set.hpp
+			set.hpp \
+			utils/RB_Tree.hpp
 OBJS_A		= $(SRCS:.cpp=.ft_o)
 OBJS_B		= $(SRCS:.cpp=.std_o)
 OBJS		= $(OBJS_A) $(OBJS_B)

@@ -7,7 +7,7 @@
 # include <cstddef> // ptrdiff_t
 # include "tree_iterator.hpp"
 # include "utils/pair.hpp"
-# include "utils/Binary_Search_Tree.hpp"
+# include "utils/RB_Tree.hpp"
 # include "utils/reverse_iterator.hpp"
 # include "utils/iterators_traits.hpp"
 
@@ -33,7 +33,7 @@ class set {
 		typedef size_t									size_type;
 
 	private:
-		BinarySearchTree<value_type, value_compare, Alloc> _bst;
+		RB_Tree<value_type, value_compare, Alloc> _bst;
 		key_compare _comp;
 		allocator_type _alloc;
 
