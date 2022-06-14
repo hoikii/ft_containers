@@ -1,6 +1,7 @@
 #include <iostream>
 #include <typeinfo>
 #include <list>
+#include <cstdlib>
 
 #ifdef STD
 	#include <iterator>
@@ -397,29 +398,53 @@ int main() {
 
 
 	std::cout << "\n ===== set =====\n";
-	ft::set<int> s;
 
-	std::cout << "0부터 10000까지 순차 삽입\n";
-	for (int i = 0; i < 10000; i++)
-		s.insert(i);
-	std::cout << "size = " << s.size() << "\n";
-
-	std::cout << "한 번 더\n";
-	for (int i = 0; i < 10000; i++)
-		s.insert(i);
-	std::cout << "size = " << s.size() << "\n";
-
+	{
+		ft::set<int> s;
+		std::cout << "0부터 10000까지 순차 삽입\n";
+		for (int i = 0; i < 10000; i++)
+			s.insert(i);
+		std::cout << "size = " << s.size() << "\n";
 #ifdef FT
-	s.tree_info();
+		s.tree_info();
 #endif
 
-	std::cout << "3100부터 2100까지 삭제\n";
-	for (int i = 3100; i > 2100; i--)
-		s.erase(i);
-	std::cout << "size = " << s.size() << "\n";
-
+		std::cout << "2000부터 3000까지 삭제\n";
+		for (int i = 2000; i < 3000; i++)
+			s.erase(i);
+		std::cout << "size = " << s.size() << "\n";
 #ifdef FT
-	s.tree_info();
+		s.tree_info();
 #endif
+		s.clear();
+		std::cout << "after clear: size = " << s.size() << "\n";
+	}
+
+
+	{
+		ft::set<int> s;
+		std::cout << "랜덤한 숫자를 100만번 삽입\n";
+		for (int i = 0; i < 1000000; i++)
+			s.insert(rand() % 1000000);
+		std::cout << "size = " << s.size() << "\n";
+#ifdef FT
+		s.tree_info();
+#endif
+
+		std::cout << "랜덤한 숫자를 10만번 삭제\n";
+		for (int i = 0; i < 100000; i++)
+			s.erase(rand() % 100000);
+		std::cout << "size = " << s.size() << "\n";
+#ifdef FT
+		s.tree_info();
+#endif
+		std::cout << "복사\n";
+		ft::set<int> sss(s);
+		std::cout << "size = " << sss.size() << "\n";
+#ifdef FT
+		sss.tree_info();
+#endif
+	}
+
 
 }

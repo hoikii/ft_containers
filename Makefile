@@ -20,9 +20,7 @@ OBJS_B		= $(SRCS:.cpp=.std_o)
 OBJS		= $(OBJS_A) $(OBJS_B)
 
 CXX			= c++
-CXXFLAGS	= -Wall -Wextra -std=c++98
-#FIXME: add Werror before submission
-#CXXFLAGS	= -Wall -Wextra -Werror -std=c++98
+CXXFLAGS	= -Wall -Wextra -Werror -std=c++98
 RM			= rm -rf
 
 CCBLUE		= \033[34m

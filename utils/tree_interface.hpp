@@ -26,6 +26,7 @@ class TreeInterface {
 			//node* dst = new node(src->value, dst_parent);
 			node* dst = _alloc.allocate(1);
 			_alloc.construct(dst, node(src->value, dst_parent));
+			dst->color = src->color;
 			dst->left = _copy_recurse(src->left, dst);
 			dst->right = _copy_recurse(src->right, dst);
 			return dst;
@@ -105,7 +106,7 @@ class TreeInterface {
 
 		size_t	getSize() const { return _size; }
 
-		void	clear() { _deleteTree(_root); }
+		void	clear() { _deleteTree(_root); _root = NULL; }
 
 		void	swap(TreeInterface& x) {
 			std::swap(_end, x._end);

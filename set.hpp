@@ -187,7 +187,7 @@ class set {
 			std::cout << "4. 중복된 red가 없는가? " << !(_bst.isRedDup(_bst._root)) << "\n";
 			size_t minH = _bst.getMinHeight(_bst._root);
 			size_t maxH = _bst.getMaxHeight(_bst._root);
-			std::cout << "5. 최대거리 거리가 최소거리의 2배를 넘지 않는가? (" << minH << "," << maxH << ")  "<< (maxH <= 2 * minH ) << "\n\n";
+			std::cout << "5. 최대거리가 최소거리의 2배를 넘지 않는가? (" << minH << "," << maxH << ")  "<< (maxH <= 2 * minH ) << "\n\n";
 		}
 
 };
