@@ -111,7 +111,7 @@ class RB_Tree : public TreeInterface<ValueType, Compare, Alloc> {
 				c->left->parent = n;
 
 			n->right = c->left;
-			p = c;
+			n->parent = c;
 			c->left = n;
 			c->parent = p;
 
@@ -133,7 +133,7 @@ class RB_Tree : public TreeInterface<ValueType, Compare, Alloc> {
 				c->right->parent = n;
 
 			n->left = c->right;
-			p = c;
+			n->parent = c;
 			c->right = n;
 			c->parent = p;
 
@@ -157,9 +157,7 @@ class RB_Tree : public TreeInterface<ValueType, Compare, Alloc> {
 				return;
 			else {
 				node* u = _uncle(n);
-				if (!u)
-					return;
-				if (u->color == RED) {		// 3. P와 삼촌노드 U가 둘 다 red라면 - P,U를 black으로, 할아버지노드 G를 red로 바꾼다.
+				if (u && u->color == RED) {		// 3. P와 삼촌노드 U가 둘 다 red라면 - P,U를 black으로, 할아버지노드 G를 red로 바꾼다.
 					p->color = BLACK;
 					u->color = BLACK;
 					p->parent->color = RED;
@@ -291,29 +289,35 @@ class RB_Tree : public TreeInterface<ValueType, Compare, Alloc> {
 			// S를 오른쪽회전한 뒤 SL과 S의 색을 바꾸면                           N   SL S SR
 			// 모든 경로의 black node는 변화 없고 case 6으로 변환된다.
 			// (case 2에 의해 s는 반드시 black이다)
-			//s = _sibling(n);
+			s = _sibling(n);
 			if ( s->color == BLACK) {
-				if (s->right->color == BLACK && s->left->color == RED) {
+
+				if (n == n->parent->left && (s->right == NULL || s->right->color == BLACK) && (s->left && s->left->color == RED)) {
 					s->color = RED;
 					s->left->color = BLACK;
-					if (n == p->left)
-						_rotate_right(s);
-					else if (n == p->right)
-						_rotate_left(s);
+					_rotate_right(s);
 				}
+				else if (n == n->parent->right && (s->left == NULL || s->left->color == BLACK) && (s->right && s->right->color == RED)) {
+					s->color = RED;
+					s->right->color = BLACK;
+					_rotate_left(s);
+				}
+
 			}
 			// case 6. S는 black, SR은 red
 			// P를 왼쪽회전한 뒤 P와 S의 색을 바꾸고, SR을 black으로 칠한다.
+
 			s = _sibling(n);
 			s->color = p->color;
 			p->color = BLACK;
-			if (n == p->left) {
+			if (n == n->parent->left) {
 				_rotate_left(p);
 				s->right->color = BLACK;
-			} else {
+			} else if (n == n->parent->right) {
 				_rotate_right(p);
 				s->left->color = BLACK;
 			}
+
 		}
 
 		node* _find_min(node* cur) {
@@ -321,6 +325,39 @@ class RB_Tree : public TreeInterface<ValueType, Compare, Alloc> {
 				cur = cur->left;
 			return cur;
 		}
+
+	public:
+		size_t getMaxHeight(node* node) const {
+			if (node == NULL)
+				return 1;
+			size_t left = getMaxHeight(node->left) + 1;
+			size_t right = getMaxHeight(node->right) + 1;
+			return (left > right) ? left : right;
+		}
+
+		size_t getMinHeight(node* node) const {
+			if (node == NULL)
+				return 1;
+			size_t left = getMinHeight(node->left) + 1;
+			size_t right = getMinHeight(node->right) + 1;
+			return (left < right) ? left : right ;
+		}
+
+		bool isRootBlack() const {
+			return _root->color == BLACK;
+		}
+		bool isRedDup(node* node) const {
+			if (node == NULL)
+				return false;
+			if (node->color == BLACK)
+				return ( isRedDup(node->left) || isRedDup(node->right));
+			if (node->left && node->left->color == RED)
+				return true;
+			if (node->right && node->right->color == RED)
+				return true;
+			return false;
+		}
+
 
 
 };

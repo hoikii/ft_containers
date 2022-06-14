@@ -398,16 +398,28 @@ int main() {
 
 	std::cout << "\n ===== set =====\n";
 	ft::set<int> s;
-	for (int i = 1; i < 100; i++)
+
+	std::cout << "0부터 10000까지 순차 삽입\n";
+	for (int i = 0; i < 10000; i++)
 		s.insert(i);
+	std::cout << "size = " << s.size() << "\n";
 
-	s.erase(9);
+	std::cout << "한 번 더\n";
+	for (int i = 0; i < 10000; i++)
+		s.insert(i);
+	std::cout << "size = " << s.size() << "\n";
 
-	for (ft::set<int>::iterator it = s.begin(); it != s.end(); it++)
-		std::cout << (*it) << "    ";
-	std::cout << "\n";
-	for (ft::set<int>::iterator it = s.begin(); it != s.end(); it++)
-		std::cout << (*it) << "    ";
-	std::cout << "\n";
+#ifdef FT
+	s.tree_info();
+#endif
+
+	std::cout << "3100부터 2100까지 삭제\n";
+	for (int i = 3100; i > 2100; i--)
+		s.erase(i);
+	std::cout << "size = " << s.size() << "\n";
+
+#ifdef FT
+	s.tree_info();
+#endif
 
 }
