@@ -12,7 +12,7 @@ class TreeInterface {
 		node*	_end;
 		node*	_root;
 		size_t	_size;
-		typedef typename Alloc::rebind<node>::other			NodeAlloc;
+		typedef typename Alloc::template rebind<node>::other			NodeAlloc;
 		Compare		_comp;
 		NodeAlloc	_alloc;
 

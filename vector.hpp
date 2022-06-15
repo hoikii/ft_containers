@@ -129,7 +129,7 @@ class vector {
 			if (n > _capacity)
 			{
 				vector tmp(_alloc);
-				tmp.reserve(n);
+				tmp.reserve((n > _capacity * 2) ? n : _capacity * 2);
 				tmp._size = n;
 				for (size_t i = 0; i < n; i++)
 					if (i < _size)

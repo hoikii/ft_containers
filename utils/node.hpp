@@ -70,7 +70,7 @@ struct nodeBase {
 	}
 
 	private:
-	nodeBase& operator=(const nodeBase& rhs) { }
+	nodeBase& operator=(const nodeBase& rhs) { (void)rhs; }
 };
 
 
